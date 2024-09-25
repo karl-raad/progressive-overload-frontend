@@ -36,7 +36,7 @@
         },
         {
             "workoutId": "b68320d2-9491-4e6d-afab-4d23f2e5041b",
-            "workoutName": "Full Body",
+            "workoutName": "Upper Body",
             "userId": "bc3089a1-f4e0-4f0e-93d2-005d2f8cf8bb",
             "date": "2023-10-02",
             "exercises": [
@@ -54,7 +54,7 @@
                     ]
                 },
                 {
-                    "exerciseName": "Squats",
+                    "exerciseName": "Pullups",
                     "sets": [
                         {
                             "setNumber": 1,
@@ -70,12 +70,12 @@
         },
         {
             "workoutId": "c68320d2-9491-4e6d-afab-4d23f2e5041b",
-            "workoutName": "Full Body",
+            "workoutName": "Lower Body",
             "userId": "cc3089a1-f4e0-4f0e-93d2-005d2f8cf8bb",
             "date": "2023-10-03",
             "exercises": [
                 {
-                    "exerciseName": "Bench Press",
+                    "exerciseName": "Deadlifts",
                     "sets": [
                         {
                             "setNumber": 1,

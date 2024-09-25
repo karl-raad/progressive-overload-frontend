@@ -68,11 +68,11 @@ export class WorkoutListComponent implements OnInit {
   }
 
   deleteWorkout(id: number) {
-    let confirm = window.confirm("Are you sure you want to delete this employee?");
+    let confirm = window.confirm("Are you sure you want to delete this workout?");
     if (confirm) {
       this.workoutService.deleteWorkout(id).subscribe({
         next: (res) => {
-          alert('Employee deleted!');
+          alert('Workout deleted!');
           this.getWorkoutList();
         },
         error: (err) => {

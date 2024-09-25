@@ -6,23 +6,23 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class WorkoutService {
-  baseUrl: string = "http://localhost:3000/";
+  baseUrl: string = "http://localhost:3000";
 
   constructor(private httpClient: HttpClient) { }
 
   addWorkout(data: any): Observable<any> {
-    return this.httpClient.post(this.baseUrl + 'workouts', data);
+    return this.httpClient.post(`${this.baseUrl}/workouts`, data);
   }
 
   updateWorkout(id: number, data: any): Observable<any> {
-    return this.httpClient.put(this.baseUrl + `workouts/${id}`, data);
+    return this.httpClient.put(`${this.baseUrl}/workouts/${id}`, data);
   }
 
   getWorkoutList(): Observable<any> {
-    return this.httpClient.get(this.baseUrl + 'workouts');
+    return this.httpClient.get(`${this.baseUrl}/workouts`);
   }
 
   deleteWorkout(id: number): Observable<any> {
-    return this.httpClient.delete(this.baseUrl + `workouts/${id}`);
+    return this.httpClient.delete(`${this.baseUrl}/workouts/${id}`);
   }
 }
