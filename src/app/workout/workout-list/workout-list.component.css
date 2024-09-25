@@ -1,0 +1,42 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-form-field {
+  width: 100%;
+  margin: auto;
+}
+
+.main-body {
+  max-width: 80%;
+  margin: 20px auto;
+}
+
+.action-icon:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-hint {
+  margin: 5px;
+}
+
+.action-btns {
+  float: right;
+  margin-right: 10px;
+}
+
+.action-btns button {
+  padding: 20px;
+}
