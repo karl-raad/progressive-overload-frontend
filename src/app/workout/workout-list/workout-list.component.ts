@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkoutService } from '../workout.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-workout-list',
@@ -27,12 +29,13 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     WorkoutAddEditComponent,
     MatFormFieldModule,
     MatInputModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCardModule
   ],
   templateUrl: './workout-list.component.html',
   styleUrl: './workout-list.component.css'
 })
-export class WorkoutListComponent implements OnInit {
+export class WorkoutListComponent {
 
   displayedColumns: string[] = [
     'date',
@@ -49,7 +52,7 @@ export class WorkoutListComponent implements OnInit {
     private workoutService: WorkoutService,
     private _snackBar: MatSnackBar) { }
 
-  ngOnInit(): void {
+  search() {
     this.getWorkoutList();
   }
 
@@ -76,18 +79,25 @@ export class WorkoutListComponent implements OnInit {
   }
 
   deleteWorkout(id: number) {
-    let confirm = window.confirm("Are you sure you want to delete this workout?");
-    if (confirm) {
-      this.workoutService.deleteWorkout(id).subscribe({
-        next: (res) => {
-          this._snackBar.open('Workout deleted successfully!', '✔', { duration: 2000 });
-          this.getWorkoutList();
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
-    }
+    const name = this.dataSource.data.find(wk => wk.id === id).workoutName;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '250px',
+      data: `Are you sure you want to delete the workout '${name}'?`
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.workoutService.deleteWorkout(id).subscribe({
+          next: (res) => {
+            this._snackBar.open('Workout deleted successfully!', '✔', { duration: 2000 });
+            this.getWorkoutList();
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+      }
+    });
   }
 
   openEditForm(data: any) {

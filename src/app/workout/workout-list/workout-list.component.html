@@ -1,14 +1,24 @@
 <mat-toolbar color="primary">
-    <span>Progressive Overload</span>
+    <span>🗲 Progressive Overload</span>
     <span class="spacer"></span>
     <button mat-raised-button color="secondary" (click)="openAddEditWorkoutDialog()">ADD WORKOUT</button>
 </mat-toolbar>
 <div class="main-body">
-
-    <mat-form-field aria-haspopup="outline">
-        <mat-label>Filter</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="i.e Full Body" #input>
-    </mat-form-field>
+    <div class="title-container">
+        <h5>Workout List</h5>
+        <button mat-raised-button color="primary" (click)="openAddEditWorkoutDialog()">ADD</button>
+    </div>
+    <mat-card appearance="outlined">
+        <mat-card-content>
+            <mat-form-field aria-haspopup="outline">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="i.e Full Body" #input>
+            </mat-form-field>
+            <div class="add-button-container">
+                <button mat-raised-button color="primary" (click)="search()">SEARCH</button>
+            </div>
+        </mat-card-content>
+    </mat-card>
 
     <div class="table-container">
         <table mat-table [dataSource]="dataSource" matSort class="workout-list-table">
