@@ -9,6 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { WorkoutAddEditComponent } from '../workout-add-edit/workout-add-edit.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-workout-list',
@@ -21,7 +24,10 @@ import { MatButtonModule } from '@angular/material/button';
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    WorkoutAddEditComponent
+    WorkoutAddEditComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule
   ],
   templateUrl: './workout-list.component.html',
   styleUrl: './workout-list.component.css'
@@ -39,7 +45,9 @@ export class WorkoutListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private dialog: MatDialog, private workoutService: WorkoutService) { }
+  constructor(private dialog: MatDialog,
+    private workoutService: WorkoutService,
+    private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.getWorkoutList();
@@ -72,7 +80,7 @@ export class WorkoutListComponent implements OnInit {
     if (confirm) {
       this.workoutService.deleteWorkout(id).subscribe({
         next: (res) => {
-          alert('Workout deleted!');
+          this._snackBar.open('Workout deleted successfully!', '✔', { duration: 2000 });
           this.getWorkoutList();
         },
         error: (err) => {

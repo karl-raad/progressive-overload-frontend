@@ -1,4 +1,4 @@
-.example-spacer {
+.spacer {
   flex: 1 1 auto;
 }
 
@@ -28,9 +28,9 @@ mat-form-field {
   width: 100%;
 }
 
-mat-hint {
+/* mat-hint {
   margin: 5px;
-}
+} */
 
 .action-btns {
   float: right;
@@ -39,4 +39,19 @@ mat-hint {
 
 .action-btns button {
   padding: 20px;
+}
+
+.workout-list-table th:last-child,
+.workout-list-table td:last-child {
+  width: 120px;
+  text-align: center;
+}
+
+.action-icon {
+  margin: 3px;
+}
+
+.mat-simple-snackbar span {
+  margin: auto;
+  text-align: center;
 }

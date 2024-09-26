@@ -8,6 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-workout-add-edit',
@@ -21,7 +22,8 @@ import { CommonModule } from '@angular/common';
     MatFormFieldModule,
     MatDialogModule,
     MatButtonModule,
-    CommonModule
+    CommonModule,
+    MatSnackBarModule
   ],
   templateUrl: './workout-add-edit.component.html',
   styleUrl: './workout-add-edit.component.css'
@@ -31,13 +33,14 @@ export class WorkoutAddEditComponent implements OnInit {
 
   constructor(
     private workoutService: WorkoutService,
+    private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<WorkoutAddEditComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.workoutForm = this.formBuilder.group({
       workoutName: ['', Validators.required],
-      date: ['', Validators.required]
+      date: [new Date(), Validators.required]
     });
   }
   ngOnInit(): void {
@@ -51,24 +54,23 @@ export class WorkoutAddEditComponent implements OnInit {
           .updateWorkout(this.data.id, this.workoutForm.value)
           .subscribe({
             next: (val: any) => {
-              alert('Workout details updated!');
+              this._snackBar.open('Workout details updated successfully!', '✔', { duration: 2000 });
               this.dialogRef.close(true);
             },
             error: (err: any) => {
-              console.error(err);
-              alert("Error while updating the workout!");
+              this._snackBar.open('Error while updating the workout!', '✘', { duration: 2000 });
             },
           });
       } else {
         this.workoutService.addWorkout(this.workoutForm.value).subscribe({
           next: (val: any) => {
-            alert('Workout added successfully!');
+            this._snackBar.open('Workout added successfully!', '✔', { duration: 2000 });
             this.workoutForm.reset();
             this.dialogRef.close(true);
           },
           error: (err: any) => {
             console.error(err);
-            alert("Error while adding the workout!");
+            this._snackBar.open('Error while adding the workout!', '✘', { duration: 2000 });
           },
         });
       }
