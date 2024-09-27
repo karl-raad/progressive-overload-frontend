@@ -4,4 +4,5 @@ export interface Exercise {
     exerciseDate?: Date;
     exerciseReps?: number[];
     exerciseWeights?: number[];
+    exerciseVolume?: number;
 }

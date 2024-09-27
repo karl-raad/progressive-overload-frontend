@@ -2,13 +2,7 @@
     <h5>{{data ? 'Edit': 'Add'}} Exercise</h5>
 </div>
 <form [formGroup]="exerciseForm" (ngSubmit)="onSubmit()">
-    <div mat-dialog-content class="content">
-        <div class="row">
-            <mat-form-field appearance="outline">
-                <mat-label>Name</mat-label>
-                <input matInput type="text" placeholder="i.e Body Pump" formControlName="exerciseName">
-            </mat-form-field>
-        </div>
+    <div mat-dialog-content>
         <div class="row">
             <mat-form-field appearance="outline">
                 <mat-label>Date</mat-label>
@@ -16,10 +10,33 @@
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Name</mat-label>
+                <input matInput type="text" placeholder="i.e Bench Press" formControlName="exerciseName">
+            </mat-form-field>
+        </div>
+        <br>
+        <div class="row">
+            <h6>Sets</h6>
+            <span class="spacer"></span>
+            <button mat-raised-button type="button" color="primary" (click)="addSet()">Add</button>
+        </div>
+        <br>
+        <div *ngFor="let rep of exerciseReps.controls; let i = index" class="row">
+            <mat-form-field appearance="outline">
+                <mat-label>Reps</mat-label>
+                <input matInput type="number" placeholder="Reps" [formControl]="getRepControl(i)">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Weight</mat-label>
+                <input matInput type="number" placeholder="Weight" [formControl]="getWeightControl(i)">
+            </mat-form-field>
+            <button *ngIf="exerciseReps.length > 1" class="remove-button" mat-raised-button type="button"
+                color="secondary" (click)="removeSet(i)">Remove</button>
         </div>
     </div>
-    <div mat-dialog-actions class="action-btns">
-        <button style="margin: 10px;" mat-raised-button color="primary" type="submit">{{data ? 'Update':
+    <div class="action-btns" mat-dialog-actions>
+        <button mat-raised-button color="primary" type="submit">{{data ? 'Update':
             'Save'}}</button>
         <button mat-raised-button type="button" color="secondary" [mat-dialog-close]=" false">Cancel</button>
     </div>

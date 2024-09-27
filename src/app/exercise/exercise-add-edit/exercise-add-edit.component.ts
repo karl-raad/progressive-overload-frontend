@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule, FormArray, FormControl } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -36,15 +36,44 @@ export class ExerciseAddEditComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<ExerciseAddEditComponent>,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
+    @Inject(MAT_DIALOG_DATA) public data: any) {
     this.exerciseForm = this.formBuilder.group({
+      exerciseDate: [new Date(), Validators.required],
       exerciseName: ['', Validators.required],
-      exerciseDate: [new Date(), Validators.required]
+      exerciseReps: this.formBuilder.array([]),
+      exerciseWeights: this.formBuilder.array([]),
+      exerciseVolume: [1, Validators.required]
     });
   }
   ngOnInit(): void {
     this.exerciseForm.patchValue(this.data);
+    this.addSet();
+  }
+
+  addSet(): void {
+    this.exerciseReps.push(new FormControl(1, Validators.required));
+    this.exerciseWeights.push(new FormControl(1, Validators.required));
+  }
+
+  get exerciseReps(): FormArray {
+    return this.exerciseForm.get('exerciseReps') as FormArray;
+  }
+
+  get exerciseWeights(): FormArray {
+    return this.exerciseForm.get('exerciseWeights') as FormArray;
+  }
+
+  removeSet(index: number): void {
+    this.exerciseReps.removeAt(index);
+    this.exerciseWeights.removeAt(index);
+  }
+
+  getRepControl(index: number): FormControl {
+    return this.exerciseReps.at(index) as FormControl;
+  }
+
+  getWeightControl(index: number): FormControl {
+    return this.exerciseWeights.at(index) as FormControl;
   }
 
   onSubmit() {

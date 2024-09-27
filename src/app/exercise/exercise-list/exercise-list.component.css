@@ -28,10 +28,6 @@ mat-form-field {
   width: 100%;
 }
 
-/* mat-hint {
-  margin: 5px;
-} */
-
 .action-btns {
   float: right;
   margin-right: 10px;
@@ -65,4 +61,18 @@ mat-form-field {
 .title-container {
   display: flex;
   justify-content: space-between;
+}
+
+.star-icon {
+  position: absolute;
+  /* Position it wherever you want */
+  top: 50px;
+  /* Adjust based on your layout */
+  left: 50%;
+  /* Center horizontally */
+  transform: translateX(-50%);
+  font-size: 100px;
+  /* Adjust size as needed */
+  z-index: 10;
+  /* Ensure it appears above other content */
 }

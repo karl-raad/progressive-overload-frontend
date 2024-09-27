@@ -17,6 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { finalize } from 'rxjs';
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Exercise } from '../exercise-interface';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-exercise-list',
@@ -37,7 +38,16 @@ import { Exercise } from '../exercise-interface';
     SpinnerComponent
   ],
   templateUrl: './exercise-list.component.html',
-  styleUrl: './exercise-list.component.css'
+  styleUrl: './exercise-list.component.css',
+  animations: [
+    trigger('celebrate', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0)' }),
+        animate('0.5s ease-out', style({ opacity: 1, transform: 'scale(1.5)' })),
+        animate('0.5s ease-in', style({ opacity: 0, transform: 'scale(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class ExerciseListComponent {
 
@@ -46,11 +56,13 @@ export class ExerciseListComponent {
     'exerciseName',
     'exerciseReps',
     'exerciseWeights',
+    'exerciseVolume',
     'action',
   ];
 
   dataSource!: MatTableDataSource<any>;
   isLoading = false;
+  showStar = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -93,7 +105,7 @@ export class ExerciseListComponent {
     const exerciseToDelete = this.dataSource.data.find((exercise: Exercise) => exercise.exerciseId === id);
     const name = exerciseToDelete.exerciseName;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '250px',
+      width: '300px',
       data: `Are you sure you want to delete the exercise '${name}'?`
     });
 
@@ -118,7 +130,7 @@ export class ExerciseListComponent {
 
   openEditForm(data: any) {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
-      data,
+      data
     });
 
     dialogRef.afterClosed().subscribe({
@@ -133,8 +145,11 @@ export class ExerciseListComponent {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent);
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        if (val)
+        // this.showStar = true;
+        // this._snackBar.open('New Personal Best!', '🏆');
+        if (val) {
           this.getExerciseList();
+        }
       },
     });
   }

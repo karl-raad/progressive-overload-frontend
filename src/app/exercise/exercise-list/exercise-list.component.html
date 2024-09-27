@@ -4,6 +4,9 @@
     <button mat-raised-button color="secondary">Sign Out</button>
 </mat-toolbar>
 <app-spinner [isLoading]="isLoading"></app-spinner>
+<div *ngIf="showStar" @celebrate class="star-icon">
+    ⭐️
+</div>
 <div class="main-body">
     <div class="title-container">
         <h5>Exercise History</h5>
@@ -13,7 +16,7 @@
         <mat-card-content>
             <mat-form-field aria-haspopup="outline">
                 <mat-label>Filter</mat-label>
-                <input matInput (keyup)="applyFilter($event)" placeholder="i.e Full Body" #input>
+                <input matInput (keyup)="applyFilter($event)" placeholder="i.e Bench Press" #input>
             </mat-form-field>
             <div class="add-button-container">
                 <button mat-raised-button color="primary" (click)="search()">SEARCH</button>
@@ -38,6 +41,10 @@
             <ng-container matColumnDef="exerciseWeights">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Weights</th>
                 <td mat-cell *matCellDef="let row">{{row.exerciseWeights}}</td>
+            </ng-container>
+            <ng-container matColumnDef="exerciseVolume">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Volume</th>
+                <td mat-cell *matCellDef="let row">{{row.exerciseVolume}}</td>
             </ng-container>
             <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef>Action</th>
