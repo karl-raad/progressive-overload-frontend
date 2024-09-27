@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Exercise } from './exercise-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,19 +13,18 @@ export class ExerciseService {
   constructor(private httpClient: HttpClient) { }
 
   addExercise(data: any): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.httpClient.post(`${this.baseUrl}/exercises`, data, { headers });
+    return this.httpClient.post(`${this.baseUrl}/exercises`, data);
   }
 
   updateExercise(id: number, data: any): Observable<any> {
     return this.httpClient.put(`${this.baseUrl}/exercises/${id}`, data);
   }
 
-  getExerciseList(): Observable<any> {
-    return this.httpClient.get(`${this.baseUrl}/exercises`);
+  getExerciseList(): Observable<Exercise[]> {
+    return this.httpClient.get<Exercise[]>(`${this.baseUrl}/exercises`);
   }
 
-  deleteExercise(id: number): Observable<any> {
+  deleteExercise(id: string): Observable<any> {
     return this.httpClient.delete(`${this.baseUrl}/exercises/${id}`);
   }
 }

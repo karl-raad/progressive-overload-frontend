@@ -58,6 +58,7 @@ export class ExerciseAddEditComponent implements OnInit {
               this.dialogRef.close(true);
             },
             error: (err: any) => {
+              console.error(err);
               this._snackBar.open('Error while updating the exercise!', '✘', { duration: 2000 });
             },
           });

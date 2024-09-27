@@ -14,6 +14,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { MatCardModule } from '@angular/material/card';
+import { finalize } from 'rxjs';
+import { SpinnerComponent } from "../../shared/spinner/spinner.component";
+import { Exercise } from '../exercise-interface';
 
 @Component({
   selector: 'app-exercise-list',
@@ -30,7 +33,8 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
-    MatCardModule
+    MatCardModule,
+    SpinnerComponent
   ],
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.css'
@@ -40,10 +44,13 @@ export class ExerciseListComponent {
   displayedColumns: string[] = [
     'exerciseDate',
     'exerciseName',
+    'exerciseReps',
+    'exerciseWeights',
     'action',
   ];
 
   dataSource!: MatTableDataSource<any>;
+  isLoading = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -57,17 +64,21 @@ export class ExerciseListComponent {
   }
 
   getExerciseList() {
-    this.exerciseService.getExerciseList().subscribe({
-      next: (res) => {
-        this.dataSource = new MatTableDataSource(res);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        console.log(res);
-      },
-      error: (err) => {
-        console.log(err);
-      },
-    });
+    this.isLoading = true;
+    this.exerciseService.getExerciseList()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (res: Exercise[]) => {
+          this.dataSource = new MatTableDataSource(res);
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          console.log(this.dataSource.data);
+        },
+        error: (err) => {
+          console.log(err);
+          this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
+        }
+      });
   }
 
   applyFilter(event: Event) {
@@ -78,8 +89,9 @@ export class ExerciseListComponent {
     }
   }
 
-  deleteExercise(id: number) {
-    const name = this.dataSource.data.find(wk => wk.id === id).exerciseName;
+  deleteExercise(id: string) {
+    const exerciseToDelete = this.dataSource.data.find((exercise: Exercise) => exercise.exerciseId === id);
+    const name = exerciseToDelete.exerciseName;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '250px',
       data: `Are you sure you want to delete the exercise '${name}'?`
@@ -87,15 +99,19 @@ export class ExerciseListComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.exerciseService.deleteExercise(id).subscribe({
-          next: (res) => {
-            this._snackBar.open('Exercise deleted successfully!', '✔', { duration: 2000 });
-            this.getExerciseList();
-          },
-          error: (err) => {
-            console.log(err);
-          },
-        });
+        this.isLoading = true;
+        this.exerciseService.deleteExercise(id)
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe({
+            next: (res) => {
+              this._snackBar.open('Exercise deleted successfully!', '✔', { duration: 2000 });
+              this.dataSource.data = this.dataSource.data.filter(item => item.exerciseId !== id)
+            },
+            error: (err) => {
+              console.log(err);
+              this._snackBar.open('Error while deleting exercise!', '✘', { duration: 2000 });
+            }
+          });
       }
     });
   }
@@ -107,9 +123,8 @@ export class ExerciseListComponent {
 
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        if (val) {
+        if (val)
           this.getExerciseList();
-        }
       }
     });
   }
@@ -118,9 +133,8 @@ export class ExerciseListComponent {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent);
     dialogRef.afterClosed().subscribe({
       next: (val) => {
-        if (val) {
+        if (val)
           this.getExerciseList();
-        }
       },
     });
   }

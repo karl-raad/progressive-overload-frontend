@@ -1,8 +1,9 @@
 <mat-toolbar color="primary">
     <span>🗲 Progressive Overload</span>
     <span class="spacer"></span>
-    <button mat-raised-button color="secondary" (click)="openAddEditExerciseDialog()">ADD WORKOUT</button>
+    <button mat-raised-button color="secondary">Sign Out</button>
 </mat-toolbar>
+<app-spinner [isLoading]="isLoading"></app-spinner>
 <div class="main-body">
     <div class="title-container">
         <h5>Exercise History</h5>
@@ -27,8 +28,16 @@
                 <td mat-cell *matCellDef="let row"> {{row.exerciseDate | date:'dd/MM/yyyy'}}</td>
             </ng-container>
             <ng-container matColumnDef="exerciseName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Exercise Name</th>
-                <td mat-cell *matCellDef="let row"> {{row.exerciseName}}</td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let row">{{row.exerciseName}}</td>
+            </ng-container>
+            <ng-container matColumnDef="exerciseReps">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Reps</th>
+                <td mat-cell *matCellDef="let row">{{row.exerciseReps}}</td>
+            </ng-container>
+            <ng-container matColumnDef="exerciseWeights">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Weights</th>
+                <td mat-cell *matCellDef="let row">{{row.exerciseWeights}}</td>
             </ng-container>
             <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef>Action</th>
@@ -36,7 +45,7 @@
                     <span (click)="openEditForm(row)" class="action-icon">
                         <mat-icon color="primary">edit</mat-icon>
                     </span>
-                    <span (click)="deleteExercise(row.id)" class="action-icon">
+                    <span (click)="deleteExercise(row.exerciseId)" class="action-icon">
                         <mat-icon color="warn">delete</mat-icon>
                     </span>
                 </td>
