@@ -41,8 +41,8 @@ mat-form-field {
   padding: 20px;
 }
 
-.workout-list-table th:last-child,
-.workout-list-table td:last-child {
+.exercise-list-table th:last-child,
+.exercise-list-table td:last-child {
   width: 120px;
   text-align: center;
 }

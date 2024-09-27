@@ -1,13 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { WorkoutService } from '../workout.service';
+import { ExerciseService } from '../exercise.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { WorkoutAddEditComponent } from '../workout-add-edit/workout-add-edit.component';
+import { ExerciseAddEditComponent } from '../exercise-add-edit/exercise-add-edit.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +16,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-workout-list',
+  selector: 'app-exercise-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -26,20 +26,20 @@ import { MatCardModule } from '@angular/material/card';
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    WorkoutAddEditComponent,
+    ExerciseAddEditComponent,
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
     MatCardModule
   ],
-  templateUrl: './workout-list.component.html',
-  styleUrl: './workout-list.component.css'
+  templateUrl: './exercise-list.component.html',
+  styleUrl: './exercise-list.component.css'
 })
-export class WorkoutListComponent {
+export class ExerciseListComponent {
 
   displayedColumns: string[] = [
-    'date',
-    'workoutName',
+    'exerciseDate',
+    'exerciseName',
     'action',
   ];
 
@@ -49,15 +49,15 @@ export class WorkoutListComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private dialog: MatDialog,
-    private workoutService: WorkoutService,
+    private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar) { }
 
   search() {
-    this.getWorkoutList();
+    this.getExerciseList();
   }
 
-  getWorkoutList() {
-    this.workoutService.getWorkoutList().subscribe({
+  getExerciseList() {
+    this.exerciseService.getExerciseList().subscribe({
       next: (res) => {
         this.dataSource = new MatTableDataSource(res);
         this.dataSource.sort = this.sort;
@@ -78,19 +78,19 @@ export class WorkoutListComponent {
     }
   }
 
-  deleteWorkout(id: number) {
-    const name = this.dataSource.data.find(wk => wk.id === id).workoutName;
+  deleteExercise(id: number) {
+    const name = this.dataSource.data.find(wk => wk.id === id).exerciseName;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '250px',
-      data: `Are you sure you want to delete the workout '${name}'?`
+      data: `Are you sure you want to delete the exercise '${name}'?`
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.workoutService.deleteWorkout(id).subscribe({
+        this.exerciseService.deleteExercise(id).subscribe({
           next: (res) => {
-            this._snackBar.open('Workout deleted successfully!', '✔', { duration: 2000 });
-            this.getWorkoutList();
+            this._snackBar.open('Exercise deleted successfully!', '✔', { duration: 2000 });
+            this.getExerciseList();
           },
           error: (err) => {
             console.log(err);
@@ -101,25 +101,25 @@ export class WorkoutListComponent {
   }
 
   openEditForm(data: any) {
-    const dialogRef = this.dialog.open(WorkoutAddEditComponent, {
+    const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
       data,
     });
 
     dialogRef.afterClosed().subscribe({
       next: (val) => {
         if (val) {
-          this.getWorkoutList();
+          this.getExerciseList();
         }
       }
     });
   }
 
-  openAddEditWorkoutDialog() {
-    const dialogRef = this.dialog.open(WorkoutAddEditComponent);
+  openAddEditExerciseDialog() {
+    const dialogRef = this.dialog.open(ExerciseAddEditComponent);
     dialogRef.afterClosed().subscribe({
       next: (val) => {
         if (val) {
-          this.getWorkoutList();
+          this.getExerciseList();
         }
       },
     });

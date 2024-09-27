@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WorkoutListComponent } from './workout/workout-list/workout-list.component';
+import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    WorkoutListComponent,],
+    ExerciseListComponent,],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
