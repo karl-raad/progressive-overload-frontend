@@ -12,7 +12,7 @@ export class ExerciseService {
 
   constructor(private httpClient: HttpClient) { }
 
-  addExercise(data: any): Observable<any> {
+  addExercise(data: any): Observable<Exercise> {
     return this.httpClient.post(`${this.baseUrl}/exercises`, data);
   }
 

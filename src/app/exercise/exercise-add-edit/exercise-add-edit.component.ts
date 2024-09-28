@@ -9,6 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { finalize } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-exercise-add-edit',
@@ -23,12 +27,17 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatDialogModule,
     MatButtonModule,
     CommonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    SpinnerComponent,
+    MatCardModule
   ],
   templateUrl: './exercise-add-edit.component.html',
   styleUrl: './exercise-add-edit.component.css'
 })
 export class ExerciseAddEditComponent implements OnInit {
+
+  isLoading = false;
   exerciseForm: FormGroup;
 
   constructor(
@@ -48,11 +57,19 @@ export class ExerciseAddEditComponent implements OnInit {
   ngOnInit(): void {
     this.exerciseForm.patchValue(this.data);
     this.addSet();
+    this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
+    this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
+  }
+
+  updateVolume(): void {
+    const totalVolume = this.totalVolume;
+    this.exerciseForm.get('exerciseVolume')?.setValue(totalVolume, { emitEvent: false });
   }
 
   addSet(): void {
     this.exerciseReps.push(new FormControl(1, Validators.required));
     this.exerciseWeights.push(new FormControl(1, Validators.required));
+    this.updateVolume();
   }
 
   get exerciseReps(): FormArray {
@@ -61,6 +78,19 @@ export class ExerciseAddEditComponent implements OnInit {
 
   get exerciseWeights(): FormArray {
     return this.exerciseForm.get('exerciseWeights') as FormArray;
+  }
+
+  get totalVolume(): number {
+    let volume = 0;
+    const repsLength = this.exerciseReps.length;
+    const weightsLength = this.exerciseWeights.length;
+
+    for (let i = 0; i < Math.max(repsLength, weightsLength); i++) {
+      const repsValue = this.exerciseReps.at(i)?.value || 1;
+      const weightsValue = this.exerciseWeights.at(i)?.value || 1;
+      volume += repsValue * weightsValue;
+    }
+    return volume;
   }
 
   removeSet(index: number): void {
@@ -78,9 +108,10 @@ export class ExerciseAddEditComponent implements OnInit {
 
   onSubmit() {
     if (this.exerciseForm.valid) {
+      this.isLoading = true;
       if (this.data) {
-        this.exerciseService
-          .updateExercise(this.data.id, this.exerciseForm.value)
+        this.exerciseService.updateExercise(this.data.id, this.exerciseForm.value)
+          .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
               this._snackBar.open('Exercise details updated successfully!', '✔', { duration: 2000 });
@@ -92,17 +123,18 @@ export class ExerciseAddEditComponent implements OnInit {
             },
           });
       } else {
-        this.exerciseService.addExercise(this.exerciseForm.value).subscribe({
-          next: (val: any) => {
-            this._snackBar.open('Exercise added successfully!', '✔', { duration: 2000 });
-            this.exerciseForm.reset();
-            this.dialogRef.close(true);
-          },
-          error: (err: any) => {
-            console.error(err);
-            this._snackBar.open('Error while adding the exercise!', '✘', { duration: 2000 });
-          },
-        });
+        this.exerciseService.addExercise(this.exerciseForm.value)
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe({
+            next: (val: any) => {
+              this._snackBar.open('Exercise added successfully!', '✔', { duration: 2000 });
+              this.dialogRef.close(this.exerciseForm.value);
+            },
+            error: (err: any) => {
+              console.error(err);
+              this._snackBar.open('Error while adding the exercise!', '✘', { duration: 2000 });
+            },
+          });
       }
     }
   }

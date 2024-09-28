@@ -81,16 +81,19 @@ export class ExerciseListComponent {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: Exercise[]) => {
-          this.dataSource = new MatTableDataSource(res);
-          this.dataSource.sort = this.sort;
-          this.dataSource.paginator = this.paginator;
-          console.log(this.dataSource.data);
+          this.updateDataSource(res);
         },
         error: (err) => {
           console.log(err);
           this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
         }
       });
+  }
+
+  updateDataSource(res: Exercise[]) {
+    this.dataSource = new MatTableDataSource(res);
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   applyFilter(event: Event) {
@@ -147,8 +150,11 @@ export class ExerciseListComponent {
       next: (val) => {
         // this.showStar = true;
         // this._snackBar.open('New Personal Best!', '🏆');
-        if (val) {
+        if (val && !this.dataSource)
           this.getExerciseList();
+        if (val && this.dataSource) {
+          this.dataSource.data.push(val);
+          this.updateDataSource(this.dataSource.data);
         }
       },
     });
