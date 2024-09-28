@@ -1,8 +1,8 @@
 export interface Exercise {
-    exerciseId?: string;
+    exerciseId: string;
     exerciseName?: string;
     exerciseDate?: Date;
-    exerciseReps?: number[];
-    exerciseWeights?: number[];
+    exerciseReps: number[];
+    exerciseWeights: number[];
     exerciseVolume?: number;
 }

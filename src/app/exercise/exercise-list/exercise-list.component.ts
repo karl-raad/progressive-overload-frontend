@@ -4,7 +4,6 @@ import { ExerciseService } from '../exercise.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { ExerciseAddEditComponent } from '../exercise-add-edit/exercise-add-edit.component';
@@ -26,7 +25,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
     CommonModule,
     MatPaginatorModule,
     MatSortModule,
-    MatToolbarModule,
     MatTableModule,
     MatIconModule,
     MatButtonModule,
@@ -144,10 +142,10 @@ export class ExerciseListComponent {
     });
   }
 
-  openAddEditExerciseDialog() {
+  openAddExerciseDialog() {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent);
     dialogRef.afterClosed().subscribe({
-      next: (val) => {
+      next: (val: Exercise) => {
         // this.showStar = true;
         // this._snackBar.open('New Personal Best!', '🏆');
         if (val && !this.dataSource)

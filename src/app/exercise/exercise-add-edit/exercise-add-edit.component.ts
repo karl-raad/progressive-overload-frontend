@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { finalize } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
+import { Exercise } from '../exercise-interface';
 
 @Component({
   selector: 'app-exercise-add-edit',
@@ -45,7 +46,7 @@ export class ExerciseAddEditComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<ExerciseAddEditComponent>,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: Exercise) {
     this.exerciseForm = this.formBuilder.group({
       exerciseDate: [new Date(), Validators.required],
       exerciseName: ['', Validators.required],
@@ -55,10 +56,30 @@ export class ExerciseAddEditComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.exerciseForm.patchValue(this.data);
-    this.addSet();
+
+    if (this.data) {
+      this.exerciseForm.patchValue({
+        exerciseDate: this.data.exerciseDate,
+        exerciseName: this.data.exerciseName,
+        exerciseVolume: this.data.exerciseVolume
+      });
+
+      this.data.exerciseReps.forEach((rep: number, index: number) => {
+        this.exerciseReps.push(new FormControl(rep, Validators.required));
+        this.exerciseWeights.push(new FormControl(this.data.exerciseWeights[index] || 1, Validators.required));
+      });
+    }
+    else
+      this.addSet();
+
     this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
     this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
+
+
+    // this.exerciseForm.patchValue(this.data);
+    // this.addSet();
+    // this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
+    // this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
   }
 
   updateVolume(): void {
@@ -110,12 +131,12 @@ export class ExerciseAddEditComponent implements OnInit {
     if (this.exerciseForm.valid) {
       this.isLoading = true;
       if (this.data) {
-        this.exerciseService.updateExercise(this.data.id, this.exerciseForm.value)
+        this.exerciseService.updateExercise(this.data.exerciseId, this.exerciseForm.value)
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
               this._snackBar.open('Exercise details updated successfully!', '✔', { duration: 2000 });
-              this.dialogRef.close(true);
+              this.dialogRef.close(this.exerciseForm.value);
             },
             error: (err: any) => {
               console.error(err);

@@ -12,11 +12,11 @@ export class ExerciseService {
 
   constructor(private httpClient: HttpClient) { }
 
-  addExercise(data: any): Observable<Exercise> {
-    return this.httpClient.post(`${this.baseUrl}/exercises`, data);
+  addExercise(data: Exercise): Observable<Exercise> {
+    return this.httpClient.post<Exercise>(`${this.baseUrl}/exercises`, data);
   }
 
-  updateExercise(id: number, data: any): Observable<any> {
+  updateExercise(id: string, data: any): Observable<any> {
     return this.httpClient.put(`${this.baseUrl}/exercises/${id}`, data);
   }
 
@@ -24,7 +24,7 @@ export class ExerciseService {
     return this.httpClient.get<Exercise[]>(`${this.baseUrl}/exercises`);
   }
 
-  deleteExercise(id: string): Observable<any> {
-    return this.httpClient.delete(`${this.baseUrl}/exercises/${id}`);
+  deleteExercise(id: string): Observable<Exercise> {
+    return this.httpClient.delete<Exercise>(`${this.baseUrl}/exercises/${id}`);
   }
 }
