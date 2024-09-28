@@ -40,19 +40,21 @@ export class ExerciseAddEditComponent implements OnInit {
 
   isLoading = false;
   exerciseForm: FormGroup;
+  userEmail = 'karl@aws.com';
 
   constructor(
     private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<ExerciseAddEditComponent>,
     private formBuilder: FormBuilder,
+    // @Inject('USER_EMAIL') private userEmail: string
     @Inject(MAT_DIALOG_DATA) public data: Exercise) {
     this.exerciseForm = this.formBuilder.group({
       exerciseDate: [new Date(), Validators.required],
       exerciseName: ['', Validators.required],
       exerciseReps: this.formBuilder.array([]),
       exerciseWeights: this.formBuilder.array([]),
-      exerciseVolume: [1, Validators.required]
+      exerciseVolume: [1, Validators.required],
     });
   }
   ngOnInit(): void {
@@ -74,12 +76,6 @@ export class ExerciseAddEditComponent implements OnInit {
 
     this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
     this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
-
-
-    // this.exerciseForm.patchValue(this.data);
-    // this.addSet();
-    // this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
-    // this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
   }
 
   updateVolume(): void {
@@ -130,8 +126,12 @@ export class ExerciseAddEditComponent implements OnInit {
   onSubmit() {
     if (this.exerciseForm.valid) {
       this.isLoading = true;
+      const exerciseData: Exercise = {
+        ...this.exerciseForm.value,
+        userEmail: this.userEmail
+      };
       if (this.data) {
-        this.exerciseService.updateExercise(this.data.exerciseId, this.exerciseForm.value)
+        this.exerciseService.updateExercise(this.data.exerciseId, exerciseData)
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
@@ -144,7 +144,7 @@ export class ExerciseAddEditComponent implements OnInit {
             },
           });
       } else {
-        this.exerciseService.addExercise(this.exerciseForm.value)
+        this.exerciseService.addExercise(exerciseData)
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {

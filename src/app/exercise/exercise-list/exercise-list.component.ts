@@ -17,6 +17,9 @@ import { finalize } from 'rxjs';
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Exercise } from '../exercise-interface';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { dateLessThan } from '../../shared/utils';
 
 @Component({
   selector: 'app-exercise-list',
@@ -33,7 +36,9 @@ import { trigger, transition, style, animate } from '@angular/animations';
     MatInputModule,
     MatSnackBarModule,
     MatCardModule,
-    SpinnerComponent
+    SpinnerComponent,
+    ReactiveFormsModule,
+    MatDatepickerModule
   ],
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.css',
@@ -65,27 +70,37 @@ export class ExerciseListComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  searchForm: FormGroup;
+  userEmail = 'karl@aws.com';
+
   constructor(private dialog: MatDialog,
     private exerciseService: ExerciseService,
-    private _snackBar: MatSnackBar) { }
-
-  search() {
-    this.getExerciseList();
+    private _snackBar: MatSnackBar,
+    private fb: FormBuilder) {
+    this.searchForm = this.fb.group({
+      exerciseName: [''],
+      startDate: [''],
+      endDate: ['']
+    }, { validators: dateLessThan('startDate', 'endDate') });
   }
 
-  getExerciseList() {
-    this.isLoading = true;
-    this.exerciseService.getExerciseList()
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (res: Exercise[]) => {
-          this.updateDataSource(res);
-        },
-        error: (err) => {
-          console.log(err);
-          this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
-        }
-      });
+  search() {
+    if (this.searchForm.valid) {
+      this.isLoading = true;
+      const { exerciseName, startDate, endDate } = this.searchForm.value;
+      this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(startDate).toISOString(), new Date(endDate).toISOString())
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (res: Exercise[]) => {
+            this.updateDataSource(res);
+          },
+          error: (err) => {
+            console.log(err);
+            this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
+          }
+        });
+    } else if (this.searchForm.errors?.['datesNotValid'])
+      this._snackBar.open('Start date must be less than end date.', '✘', { duration: 2000 });
   }
 
   updateDataSource(res: Exercise[]) {
@@ -94,31 +109,21 @@ export class ExerciseListComponent {
     this.dataSource.paginator = this.paginator;
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  deleteExercise(id: string) {
-    const exerciseToDelete = this.dataSource.data.find((exercise: Exercise) => exercise.exerciseId === id);
-    const name = exerciseToDelete.exerciseName;
+  deleteExercise(row: Exercise) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '300px',
-      data: `Are you sure you want to delete the exercise '${name}'?`
+      data: `Are you sure you want to delete the exercise "${row.exerciseName}"?`
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.isLoading = true;
-        this.exerciseService.deleteExercise(id)
+        this.exerciseService.deleteExercise(row.exerciseId)
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (res) => {
               this._snackBar.open('Exercise deleted successfully!', '✔', { duration: 2000 });
-              this.dataSource.data = this.dataSource.data.filter(item => item.exerciseId !== id)
+              this.dataSource.data = this.dataSource.data.filter(item => item.exerciseId !== row.exerciseId)
             },
             error: (err) => {
               console.log(err);
@@ -134,28 +139,30 @@ export class ExerciseListComponent {
       data
     });
 
-    dialogRef.afterClosed().subscribe({
-      next: (val) => {
-        if (val)
-          this.getExerciseList();
-      }
-    });
+    // dialogRef.afterClosed().subscribe({
+    //   next: (val) => {
+    // if (val)
+    //   this.search();
+    // }
+    // });
   }
 
   openAddExerciseDialog() {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent);
-    dialogRef.afterClosed().subscribe({
-      next: (val: Exercise) => {
-        // this.showStar = true;
-        // this._snackBar.open('New Personal Best!', '🏆');
-        if (val && !this.dataSource)
-          this.getExerciseList();
-        if (val && this.dataSource) {
-          this.dataSource.data.push(val);
-          this.updateDataSource(this.dataSource.data);
-        }
-      },
-    });
+    // dialogRef.afterClosed().subscribe({
+    //   next: (val: Exercise) => {
+    //     this.showStar = true;
+    //     this._snackBar.open('New Personal Best!', '🏆');
+
+    //     if (val && !this.dataSource)
+    //       this.search();
+
+    //     if (val && this.dataSource) {
+    //       this.dataSource.data.push(val);
+    //       this.updateDataSource(this.dataSource.data);
+    //     }
+    //   },
+    // });
   }
 
 }
