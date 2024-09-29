@@ -7,3 +7,8 @@ export interface Exercise {
     exerciseVolume?: number;
     userEmail: string;
 }
+
+export interface ExerciseData {
+    exerciseDataId: string;
+    exerciseDataName: string;
+}

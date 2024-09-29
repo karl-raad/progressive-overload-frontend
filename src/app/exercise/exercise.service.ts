@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Exercise } from './exercise-interface';
+import { Exercise, ExerciseData } from './exercise-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,10 @@ export class ExerciseService {
       .set('endDate', endDate);
 
     return this.httpClient.get<Exercise[]>(`${this.baseUrl}/exercises`, { params });
+  }
+
+  getExerciseDataList(): Observable<ExerciseData[]> {
+    return this.httpClient.get<ExerciseData[]>(`${this.baseUrl}/exercises-data`);
   }
 
   deleteExercise(id: string): Observable<Exercise> {

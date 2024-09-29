@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ExerciseService } from '../exercise.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -13,12 +13,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { MatCardModule } from '@angular/material/card';
-import { finalize } from 'rxjs';
+import { finalize, map, startWith } from 'rxjs';
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
-import { Exercise } from '../exercise-interface';
+import { Exercise, ExerciseData } from '../exercise-interface';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-exercise-list',
@@ -37,7 +39,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatCardModule,
     SpinnerComponent,
     ReactiveFormsModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatAutocompleteModule,
+    MatOptionModule
   ],
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.scss',
@@ -51,7 +55,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     ]),
   ],
 })
-export class ExerciseListComponent {
+export class ExerciseListComponent implements OnInit {
 
   displayedColumns: string[] = [
     'exerciseDate',
@@ -71,38 +75,73 @@ export class ExerciseListComponent {
 
   searchForm: FormGroup;
   userEmail = 'karl@aws.com';
+  exerciseData: ExerciseData[] = [];
+  filteredExercises: ExerciseData[] = [];
+  readonly range: FormGroup;
 
-  readonly range = new FormGroup({
-    startDate: new FormControl<Date | null>(null),
-    endDate: new FormControl<Date | null>(null),
-  });
+  exerciseControl = new FormControl();
 
   constructor(private dialog: MatDialog,
     private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder) {
+
+    this.range = this.fb.group({
+      startDate: new FormControl<Date | null>(null, Validators.required),
+      endDate: new FormControl<Date | null>(null, Validators.required),
+    });
     this.searchForm = this.fb.group({
-      exerciseName: [''],
-      range: this.range
+      range: this.range,
     });
   }
 
+  ngOnInit(): void {
+    this.exerciseControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      )
+      .subscribe(filtered => {
+        this.filteredExercises = filtered;
+      });
+    this.isLoading = true;
+    this.exerciseService.getExerciseDataList()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (res: ExerciseData[]) => {
+          this.exerciseData = res;
+        },
+        error: (err) => {
+          console.log(err);
+          this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
+        }
+      });
+  }
+
+  private _filter(value: string): any[] {
+    const filterValue = value.toLowerCase();
+    return this.exerciseData.filter(exercise => exercise.exerciseDataName.toLowerCase().includes(filterValue));
+  }
+
   search() {
-    if (this.searchForm.valid) {
-      this.isLoading = true;
-      const { exerciseName, range } = this.searchForm.value;
-      this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe({
-          next: (res: Exercise[]) => {
-            this.updateDataSource(res);
-          },
-          error: (err) => {
-            console.log(err);
-            this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
-          }
-        });
+    if (this.searchForm.invalid) {
+      this.searchForm.markAllAsTouched();
+      return;
     }
+    this.isLoading = true;
+    const { range } = this.searchForm.value;
+    const exerciseName = this.exerciseControl.value ? this.exerciseControl.value : '';
+    this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (res: Exercise[]) => {
+          this.updateDataSource(res);
+        },
+        error: (err) => {
+          console.log(err);
+          this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
+        }
+      });
   }
 
   updateDataSource(res: Exercise[]) {
