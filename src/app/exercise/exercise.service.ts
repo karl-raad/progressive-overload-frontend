@@ -9,6 +9,7 @@ import { Exercise, ExerciseData } from './exercise-interface';
 })
 export class ExerciseService {
   baseUrl: string = "https://uo5vaf74da.execute-api.ap-southeast-2.amazonaws.com/prod";
+  private storageKey = 'exerciseData';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -36,5 +37,18 @@ export class ExerciseService {
 
   deleteExercise(id: string): Observable<Exercise> {
     return this.httpClient.delete<Exercise>(`${this.baseUrl}/exercises/${id}`);
+  }
+
+  setExerciseData(data: any): void {
+    sessionStorage.setItem(this.storageKey, JSON.stringify(data));
+  }
+
+  getExerciseData(): any {
+    const data = sessionStorage.getItem(this.storageKey);
+    return data ? JSON.parse(data) : null;
+  }
+
+  clearExerciseData(): void {
+    sessionStorage.removeItem(this.storageKey);
   }
 }

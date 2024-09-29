@@ -95,29 +95,32 @@ export class ExerciseListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.exerciseService.getExerciseDataList()
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (res: ExerciseData[]) => {
-          this.exerciseData = res;
-          this.filteredExercises = res;
-          this.searchForm.get('exerciseName')!.valueChanges
-            .pipe(
-              startWith(''),
-              map(value => this._filter(value)),
-              map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
-            )
-            .subscribe(filtered => {
-              this.filteredExercises = filtered;
-            });
-        },
-        error: (err) => {
-          console.log(err);
-          this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
-        }
-      });
-
+    this.exerciseData = this.exerciseService.getExerciseData();
+    if (this.exerciseData.length === 0) {
+      this.isLoading = true;
+      this.exerciseService.getExerciseDataList()
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: (res: ExerciseData[]) => {
+            this.exerciseData = res;
+            this.exerciseService.setExerciseData(res);
+            this.filteredExercises = res;
+            this.searchForm.get('exerciseName')!.valueChanges
+              .pipe(
+                startWith(''),
+                map(value => this._filter(value)),
+                map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
+              )
+              .subscribe(filtered => {
+                this.filteredExercises = filtered;
+              });
+          },
+          error: (err) => {
+            console.log(err);
+            this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
+          }
+        });
+    }
   }
 
   private _filter(value: string): any[] {
