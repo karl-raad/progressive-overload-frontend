@@ -96,7 +96,7 @@ export class ExerciseListComponent implements OnInit {
 
   ngOnInit(): void {
     this.exerciseData = this.exerciseService.getExerciseData();
-    if (this.exerciseData.length === 0) {
+    if (!this.exerciseData || this.exerciseData.length === 0) {
       this.isLoading = true;
       this.exerciseService.getExerciseDataList()
         .pipe(finalize(() => this.isLoading = false))
@@ -105,15 +105,7 @@ export class ExerciseListComponent implements OnInit {
             this.exerciseData = res;
             this.exerciseService.setExerciseData(res);
             this.filteredExercises = res;
-            this.searchForm.get('exerciseName')!.valueChanges
-              .pipe(
-                startWith(''),
-                map(value => this._filter(value)),
-                map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
-              )
-              .subscribe(filtered => {
-                this.filteredExercises = filtered;
-              });
+            this.exerciseNameSearchCriteriaChange();
           },
           error: (err) => {
             console.log(err);
@@ -121,6 +113,20 @@ export class ExerciseListComponent implements OnInit {
           }
         });
     }
+    else
+      this.exerciseNameSearchCriteriaChange();
+  }
+
+  private exerciseNameSearchCriteriaChange() {
+    this.searchForm.get('exerciseName')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value)),
+        map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
+      )
+      .subscribe(filtered => {
+        this.filteredExercises = filtered;
+      });
   }
 
   private _filter(value: string): any[] {
