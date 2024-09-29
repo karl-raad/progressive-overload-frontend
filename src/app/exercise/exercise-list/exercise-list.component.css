@@ -72,3 +72,28 @@ mat-form-field {
   z-index: 10;
   /* Ensure it appears above other content */
 }
+
+mat-toolbar {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    display: block;
+    width: 100%;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+}

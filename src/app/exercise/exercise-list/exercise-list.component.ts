@@ -17,9 +17,8 @@ import { finalize } from 'rxjs';
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Exercise } from '../exercise-interface';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { dateLessThan } from '../../shared/utils';
 
 @Component({
   selector: 'app-exercise-list',
@@ -73,22 +72,26 @@ export class ExerciseListComponent {
   searchForm: FormGroup;
   userEmail = 'karl@aws.com';
 
+  readonly range = new FormGroup({
+    startDate: new FormControl<Date | null>(null),
+    endDate: new FormControl<Date | null>(null),
+  });
+
   constructor(private dialog: MatDialog,
     private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder) {
     this.searchForm = this.fb.group({
       exerciseName: [''],
-      startDate: [''],
-      endDate: ['']
-    }, { validators: dateLessThan('startDate', 'endDate') });
+      range: this.range
+    });
   }
 
   search() {
     if (this.searchForm.valid) {
       this.isLoading = true;
-      const { exerciseName, startDate, endDate } = this.searchForm.value;
-      this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(startDate).toISOString(), new Date(endDate).toISOString())
+      const { exerciseName, range } = this.searchForm.value;
+      this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: (res: Exercise[]) => {
@@ -99,8 +102,7 @@ export class ExerciseListComponent {
             this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
           }
         });
-    } else if (this.searchForm.errors?.['datesNotValid'])
-      this._snackBar.open('Start date must be less than end date.', '✘', { duration: 2000 });
+    }
   }
 
   updateDataSource(res: Exercise[]) {
