@@ -10,6 +10,7 @@ export class CdkStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'ProgressiveOverloadAngularAppBucket', {
       versioned: true,
       websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'index.html',
       publicReadAccess: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS
     });
