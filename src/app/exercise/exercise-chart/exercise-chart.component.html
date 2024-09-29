@@ -33,7 +33,7 @@
         </form>
     </mat-card>
     <br>
-    <div [hidden]="exerciseHistory.length === 0">
+    <div [hidden]="!exerciseHistory || exerciseHistory.length === 0">
         <div class="chart-container">
             <canvas baseChart width="400" height="250" [type]="'line'" [data]="lineChartData"
                 [options]="lineChartOptions" [legend]="lineChartLegend">
