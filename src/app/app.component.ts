@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Component, ChangeDetectorRef, OnDestroy, inject, ViewChild } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-import { filter } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { MediaMatcher } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -18,32 +20,33 @@ import { filter } from 'rxjs';
     ThemeToggleComponent,
     RouterModule,
     MatListModule,
+    MatIconModule,
+    MatSidenavModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy {
   title = 'progressive-overload-app';
-  activeRoute: string | null = null;
-  toggledRoute: string | null = null;
+  mobileQuery: MediaQueryList;
+  @ViewChild('snav') sidenav!: MatSidenav;
+  private _mobileQueryListener: () => void;
 
-  constructor(private router: Router) {
-    // Subscribe to router events to update the active route
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.activeRoute = event.url;
-      });
-  }
-  ngOnInit(): void {
-    this.toggle('/exercise-list');
+  constructor() {
+    const changeDetectorRef = inject(ChangeDetectorRef);
+    const media = inject(MediaMatcher);
+    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addListener(this._mobileQueryListener);
   }
 
-  toggle(route: string) {
-    this.toggledRoute = this.toggledRoute === route ? null : route;
+  closeSidenav() {
+    if (this.sidenav) {
+      this.sidenav.close(); // Close the sidenav
+    }
   }
 
-  isToggled(route: string): boolean {
-    return this.toggledRoute === route;
+  ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 }

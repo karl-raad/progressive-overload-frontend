@@ -84,7 +84,6 @@ export class ExerciseListComponent implements OnInit {
     private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar,
     private fb: FormBuilder) {
-
     this.range = this.fb.group({
       startDate: new FormControl<Date | null>(null, Validators.required),
       endDate: new FormControl<Date | null>(null, Validators.required)
@@ -103,21 +102,22 @@ export class ExerciseListComponent implements OnInit {
         next: (res: ExerciseData[]) => {
           this.exerciseData = res;
           this.filteredExercises = res;
+          this.searchForm.get('exerciseName')!.valueChanges
+            .pipe(
+              startWith(''),
+              map(value => this._filter(value)),
+              map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
+            )
+            .subscribe(filtered => {
+              this.filteredExercises = filtered;
+            });
         },
         error: (err) => {
           console.log(err);
           this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
         }
       });
-    this.searchForm.get('exerciseName')!.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value)),
-        map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
-      )
-      .subscribe(filtered => {
-        this.filteredExercises = filtered;
-      });
+
   }
 
   private _filter(value: string): any[] {

@@ -1,1 +1,40 @@
-<p>exercise-chart works!</p>
+<div class="main-body">
+    <div class="title-container">
+        <h5>Exercise Chart</h5>
+    </div>
+    <mat-card appearance="outlined">
+        <form [formGroup]="searchForm" (ngSubmit)="search()">
+            <mat-card-content>
+                <div class="row">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Range</mat-label>
+                        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                            <input matStartDate formControlName="startDate" placeholder="Start date" required>
+                            <input matEndDate formControlName="endDate" placeholder="End date" required>
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Name</mat-label>
+                        <input type="text" matInput formControlName="exerciseName" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let exercise of filteredExercises" [value]="exercise.exerciseDataName">
+                                {{ exercise.exerciseDataName }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="search-button-container">
+                    <button mat-raised-button color="primary" type="submit">SEARCH</button>
+                </div>
+            </mat-card-content>
+        </form>
+    </mat-card>
+    <br>
+    <div class="chart-container">
+        <canvas baseChart width="400" height="400" [type]="'line'" [data]="lineChartData" [options]="lineChartOptions"
+            [legend]="lineChartLegend">
+        </canvas>
+    </div>
+</div>
