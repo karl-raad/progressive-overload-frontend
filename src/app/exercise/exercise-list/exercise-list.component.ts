@@ -40,7 +40,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDatepickerModule
   ],
   templateUrl: './exercise-list.component.html',
-  styleUrl: './exercise-list.component.css',
+  styleUrl: './exercise-list.component.scss',
   animations: [
     trigger('celebrate', [
       transition(':enter', [

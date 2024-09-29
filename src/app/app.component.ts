@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -11,10 +12,11 @@ import { MatButtonModule } from '@angular/material/button';
     RouterOutlet,
     ExerciseListComponent,
     MatToolbarModule,
-    MatButtonModule
+    MatButtonModule,
+    ThemeToggleComponent
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'progressive-overload-app';

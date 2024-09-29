@@ -34,7 +34,7 @@ import { Exercise } from '../exercise-interface';
     MatCardModule
   ],
   templateUrl: './exercise-add-edit.component.html',
-  styleUrl: './exercise-add-edit.component.css'
+  styleUrl: './exercise-add-edit.component.scss'
 })
 export class ExerciseAddEditComponent implements OnInit {
 

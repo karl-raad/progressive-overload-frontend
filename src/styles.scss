@@ -1,0 +1,35 @@
+@use 'assets/themes.scss' as themes;
+@use '@angular/material' as mat;
+
+// Apply Material styles
+@include mat.core();
+
+.dark-theme {
+    @include mat.all-component-themes(themes.$dark-theme);
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body {
+    background-color: #333; // Default to dark theme background
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        @include mat.all-component-colors(themes.$light-theme);
+    }
+
+    body {
+        background-color: #f4f4f4; // Light theme background
+    }
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
