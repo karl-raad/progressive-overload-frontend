@@ -79,7 +79,6 @@ export class ExerciseListComponent implements OnInit {
   filteredExercises: ExerciseData[] = [];
   readonly range: FormGroup;
 
-  exerciseControl = new FormControl();
 
   constructor(private dialog: MatDialog,
     private exerciseService: ExerciseService,
@@ -88,33 +87,36 @@ export class ExerciseListComponent implements OnInit {
 
     this.range = this.fb.group({
       startDate: new FormControl<Date | null>(null, Validators.required),
-      endDate: new FormControl<Date | null>(null, Validators.required),
+      endDate: new FormControl<Date | null>(null, Validators.required)
     });
     this.searchForm = this.fb.group({
       range: this.range,
+      exerciseName: ['']
     });
   }
 
   ngOnInit(): void {
-    this.exerciseControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      )
-      .subscribe(filtered => {
-        this.filteredExercises = filtered;
-      });
     this.isLoading = true;
     this.exerciseService.getExerciseDataList()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: ExerciseData[]) => {
           this.exerciseData = res;
+          this.filteredExercises = res;
         },
         error: (err) => {
           console.log(err);
           this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
         }
+      });
+    this.searchForm.get('exerciseName')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value)),
+        map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
+      )
+      .subscribe(filtered => {
+        this.filteredExercises = filtered;
       });
   }
 
@@ -123,14 +125,19 @@ export class ExerciseListComponent implements OnInit {
     return this.exerciseData.filter(exercise => exercise.exerciseDataName.toLowerCase().includes(filterValue));
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   search() {
     if (this.searchForm.invalid) {
       this.searchForm.markAllAsTouched();
       return;
     }
     this.isLoading = true;
-    const { range } = this.searchForm.value;
-    const exerciseName = this.exerciseControl.value ? this.exerciseControl.value : '';
+    let { range, exerciseName } = this.searchForm.value;
+    exerciseName = exerciseName ? exerciseName : '';
     this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
@@ -189,7 +196,10 @@ export class ExerciseListComponent implements OnInit {
   }
 
   openAddExerciseDialog() {
-    const dialogRef = this.dialog.open(ExerciseAddEditComponent);
+    const data = this.exerciseData;
+    const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
+      data
+    });
     // dialogRef.afterClosed().subscribe({
     //   next: (val: Exercise) => {
     //     this.showStar = true;

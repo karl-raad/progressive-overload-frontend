@@ -22,7 +22,7 @@
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Name</mat-label>
-                        <input type="text" matInput [formControl]="exerciseControl" [matAutocomplete]="auto">
+                        <input type="text" matInput formControlName="exerciseName" [matAutocomplete]="auto">
                         <mat-autocomplete #auto="matAutocomplete">
                             <mat-option *ngFor="let exercise of filteredExercises" [value]="exercise.exerciseDataName">
                                 {{ exercise.exerciseDataName }}
@@ -39,6 +39,10 @@
     </mat-card>
     <br>
     <div [hidden]="!dataSource" class="table-container">
+        <mat-form-field>
+            <mat-label>Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. pu" #input>
+        </mat-form-field>
         <table mat-table [dataSource]="dataSource" matSort class="exercise-list-table">
             <ng-container matColumnDef="exerciseDate">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
@@ -50,11 +54,11 @@
             </ng-container>
             <ng-container matColumnDef="exerciseReps">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Reps</th>
-                <td mat-cell *matCellDef="let row">{{row.exerciseReps}}</td>
+                <td mat-cell *matCellDef="let row">{{row.exerciseReps.join(' | ')}}</td>
             </ng-container>
             <ng-container matColumnDef="exerciseWeights">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Weights</th>
-                <td mat-cell *matCellDef="let row">{{row.exerciseWeights}}</td>
+                <td mat-cell *matCellDef="let row">{{row.exerciseWeights.join(' | ')}}</td>
             </ng-container>
             <ng-container matColumnDef="exerciseVolume">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Volume</th>
