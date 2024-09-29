@@ -13,7 +13,7 @@ import { finalize, map, startWith } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-exercise-chart',
@@ -28,8 +28,10 @@ import { CommonModule } from '@angular/common';
     MatSnackBarModule,
     MatButtonModule,
     MatInputModule,
-    CommonModule
+    CommonModule,
+    DatePipe
   ],
+  providers: [DatePipe],
   templateUrl: './exercise-chart.component.html',
   styleUrl: './exercise-chart.component.scss'
 })
@@ -42,24 +44,15 @@ export class ExerciseChartComponent implements OnInit {
   filteredExercises: ExerciseData[] = [];
   exerciseHistory: Exercise[] = [];
   readonly range: FormGroup;
-
   public lineChartData: ChartConfiguration<'line'>['data'] = {
-    labels: [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July'
-    ],
+    labels: [],
     datasets: [
       {
-        data: [65, 59, 80, 81, 56, 55, 40],
-        label: 'Series A',
+        data: [],
+        label: '',
         fill: true,
         tension: 0.5,
-        borderColor: 'black',
+        borderColor: '#ff4081',
         backgroundColor: 'rgba(255,0,0,0.3)'
       }
     ]
@@ -69,7 +62,7 @@ export class ExerciseChartComponent implements OnInit {
   };
   public lineChartLegend = true;
 
-  constructor(private fb: FormBuilder, private exerciseService: ExerciseService, private _snackBar: MatSnackBar) {
+  constructor(private datePipe: DatePipe, private fb: FormBuilder, private exerciseService: ExerciseService, private _snackBar: MatSnackBar) {
     this.range = this.fb.group({
       startDate: new FormControl<Date | null>(null, Validators.required),
       endDate: new FormControl<Date | null>(null, Validators.required)
@@ -124,7 +117,19 @@ export class ExerciseChartComponent implements OnInit {
       .subscribe({
         next: (res: Exercise[]) => {
           this.exerciseHistory = res
-
+          this.lineChartData = {
+            labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM/yyyy HH:mm') || ''),
+            datasets: [
+              {
+                data: this.exerciseHistory.map(ex => ex.exerciseVolume),
+                label: 'Volume Progress',
+                fill: true,
+                tension: 0.5,
+                borderColor: '#ff4081',
+                backgroundColor: 'rgba(255,0,0,0.3)'
+              }
+            ]
+          };
         },
         error: (err) => {
           console.log(err);

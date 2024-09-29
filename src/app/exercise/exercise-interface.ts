@@ -1,10 +1,10 @@
 export interface Exercise {
     exerciseId: string;
     exerciseName: string;
-    exerciseDate?: Date;
+    exerciseDate: Date;
     exerciseReps: number[];
     exerciseWeights: number[];
-    exerciseVolume?: number;
+    exerciseVolume: number;
     userEmail: string;
 }
 
