@@ -1,7 +1,17 @@
 <mat-toolbar color="primary">
-    <span>🗲 Progressive Overload</span>
+    <span class="title">🗲 Progressive Overload</span>
+    <button mat-button routerLink="/exercise-list" (click)="toggle('/exercise-list')"
+        [class.toggled]="isToggled('/exercise-list')">
+        Exercise List
+    </button>
+
+    <button mat-button routerLink="/exercise-chart" (click)="toggle('/exercise-chart')"
+        [class.toggled]="isToggled('/exercise-chart')">
+        Exercise Chart
+    </button>
     <span class="spacer"></span>
     <app-theme-toggle></app-theme-toggle>
     <button mat-raised-button color="secondary">Sign Out</button>
 </mat-toolbar>
-<app-exercise-list></app-exercise-list>
+
+<router-outlet></router-outlet>
