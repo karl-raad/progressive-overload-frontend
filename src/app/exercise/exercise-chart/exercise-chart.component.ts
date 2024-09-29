@@ -50,7 +50,6 @@ export class ExerciseChartComponent implements OnInit {
       {
         data: [],
         label: '',
-        fill: true,
         tension: 0.5,
         borderColor: '#ff4081',
         backgroundColor: 'rgba(255,0,0,0.3)'
@@ -123,7 +122,6 @@ export class ExerciseChartComponent implements OnInit {
               {
                 data: this.exerciseHistory.map(ex => ex.exerciseVolume),
                 label: 'Volume Progress',
-                fill: true,
                 tension: 0.5,
                 borderColor: '#ff4081',
                 backgroundColor: 'rgba(255,0,0,0.3)'
