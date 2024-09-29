@@ -14,6 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule, DatePipe } from '@angular/common';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-exercise-chart',
@@ -29,7 +30,8 @@ import { CommonModule, DatePipe } from '@angular/common';
     MatButtonModule,
     MatInputModule,
     CommonModule,
-    DatePipe
+    DatePipe,
+    SpinnerComponent
   ],
   providers: [DatePipe],
   templateUrl: './exercise-chart.component.html',
@@ -117,7 +119,7 @@ export class ExerciseChartComponent implements OnInit {
         next: (res: Exercise[]) => {
           this.exerciseHistory = res
           this.lineChartData = {
-            labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM/yyyy HH:mm') || ''),
+            labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM HH:mm') || ''),
             datasets: [
               {
                 data: this.exerciseHistory.map(ex => ex.exerciseVolume),

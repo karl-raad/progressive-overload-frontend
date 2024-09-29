@@ -10,7 +10,7 @@
     <mat-card appearance="outlined">
         <form [formGroup]="searchForm" (ngSubmit)="search()">
             <mat-card-content>
-                <div class="row">
+                <div>
                     <mat-form-field appearance="fill">
                         <mat-label>Date Range</mat-label>
                         <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -41,7 +41,7 @@
     <div [hidden]="!dataSource" class="table-container">
         <mat-form-field>
             <mat-label>Filter</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. pu" #input>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ex. push" #input>
         </mat-form-field>
         <table mat-table [dataSource]="dataSource" matSort class="exercise-list-table">
             <ng-container matColumnDef="exerciseDate">
