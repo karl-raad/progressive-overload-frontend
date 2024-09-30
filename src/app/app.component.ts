@@ -8,9 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { environment } from '../environments/environment';
+import { environment } from './environment';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
-import { AuthService } from './auth/auth.service';
+import { SessionStorageService } from './shared/session-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +26,7 @@ import { AuthService } from './auth/auth.service';
     MatIconModule,
     MatSidenavModule
   ],
-  providers: [AuthService],
+  providers: [],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -36,7 +36,7 @@ export class AppComponent implements OnDestroy {
   @ViewChild('snav') sidenav!: MatSidenav;
   private _mobileQueryListener: () => void;
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, private sessionStorageService: SessionStorageService) {
     const changeDetectorRef = inject(ChangeDetectorRef);
     const media = inject(MediaMatcher);
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
@@ -61,7 +61,7 @@ export class AppComponent implements OnDestroy {
       cognitoUser.signOut();
       this.router.navigate(['login'])
         .then(() => {
-          this.authService.clearUserEmail();
+          this.sessionStorageService.clearUserEmail();
           this.closeSidenav();
           console.log('Successfully logged out and navigated to login.');
         })

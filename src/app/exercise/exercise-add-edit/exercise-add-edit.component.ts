@@ -15,6 +15,7 @@ import { finalize, map, startWith } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { Exercise, ExerciseData } from '../exercise-interface';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-exercise-add-edit',
@@ -42,7 +43,6 @@ export class ExerciseAddEditComponent implements OnInit {
 
   isLoading = false;
   exerciseForm: FormGroup;
-  userEmail = 'karl@aws.com';
   filteredExercises: ExerciseData[] = [];
 
   constructor(
@@ -50,7 +50,7 @@ export class ExerciseAddEditComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<ExerciseAddEditComponent>,
     private formBuilder: FormBuilder,
-    // @Inject('USER_EMAIL') private userEmail: string
+    private sessionStoreService: SessionStorageService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
 
     this.exerciseForm = this.formBuilder.group({
@@ -149,7 +149,7 @@ export class ExerciseAddEditComponent implements OnInit {
       this.isLoading = true;
       const exerciseData: Exercise = {
         ...this.exerciseForm.value,
-        userEmail: this.userEmail
+        userEmail: this.sessionStoreService.getUserEmail()
       };
       if (!this.isDataArray()) {
         this.exerciseService.updateExercise(this.data.exerciseId, exerciseData)

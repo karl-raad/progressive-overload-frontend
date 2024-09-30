@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environment';
 import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 

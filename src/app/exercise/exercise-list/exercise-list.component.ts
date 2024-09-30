@@ -21,6 +21,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-exercise-list',
@@ -74,7 +75,6 @@ export class ExerciseListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   searchForm: FormGroup;
-  userEmail = 'karl@aws.com';
   exerciseData: ExerciseData[] = [];
   filteredExercises: ExerciseData[] = [];
   readonly range: FormGroup;
@@ -83,7 +83,8 @@ export class ExerciseListComponent implements OnInit {
   constructor(private dialog: MatDialog,
     private exerciseService: ExerciseService,
     private _snackBar: MatSnackBar,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private sessionStorageService: SessionStorageService) {
     this.range = this.fb.group({
       startDate: new FormControl<Date | null>(null, Validators.required),
       endDate: new FormControl<Date | null>(null, Validators.required)
@@ -95,7 +96,7 @@ export class ExerciseListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.exerciseData = this.exerciseService.getExerciseData();
+    this.exerciseData = this.sessionStorageService.getExerciseData();
     if (!this.exerciseData || this.exerciseData.length === 0) {
       this.isLoading = true;
       this.exerciseService.getExerciseDataList()
@@ -103,7 +104,7 @@ export class ExerciseListComponent implements OnInit {
         .subscribe({
           next: (res: ExerciseData[]) => {
             this.exerciseData = res;
-            this.exerciseService.setExerciseData(res);
+            this.sessionStorageService.setExerciseData(res);
             this.filteredExercises = res;
             this.exerciseNameSearchCriteriaChange();
           },
@@ -147,7 +148,7 @@ export class ExerciseListComponent implements OnInit {
     this.isLoading = true;
     let { range, exerciseName } = this.searchForm.value;
     exerciseName = exerciseName ? exerciseName : '';
-    this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
+    this.exerciseService.getExerciseList(this.sessionStorageService.getUserEmail(), exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: Exercise[]) => {

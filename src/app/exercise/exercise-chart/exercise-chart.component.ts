@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule, DatePipe } from '@angular/common';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-exercise-chart',
@@ -41,7 +42,6 @@ export class ExerciseChartComponent implements OnInit {
   title = 'ng2-charts-demo';
   isLoading = false;
   searchForm: FormGroup;
-  userEmail = 'karl@aws.com';
   exerciseData: ExerciseData[] = [];
   filteredExercises: ExerciseData[] = [];
   exerciseHistory: Exercise[] = [];
@@ -63,7 +63,7 @@ export class ExerciseChartComponent implements OnInit {
   };
   public lineChartLegend = true;
 
-  constructor(private datePipe: DatePipe, private fb: FormBuilder, private exerciseService: ExerciseService, private _snackBar: MatSnackBar) {
+  constructor(private sessionStoreService: SessionStorageService, private datePipe: DatePipe, private fb: FormBuilder, private exerciseService: ExerciseService, private _snackBar: MatSnackBar) {
     this.range = this.fb.group({
       startDate: new FormControl<Date | null>(null, Validators.required),
       endDate: new FormControl<Date | null>(null, Validators.required)
@@ -75,8 +75,8 @@ export class ExerciseChartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.exerciseData = this.exerciseService.getExerciseData();
-    this.filteredExercises = this.exerciseService.getExerciseData();
+    this.exerciseData = this.sessionStoreService.getExerciseData();
+    this.filteredExercises = this.sessionStoreService.getExerciseData();
     this.searchForm.get('exerciseName')!.valueChanges
       .pipe(
         startWith(''),
@@ -102,7 +102,7 @@ export class ExerciseChartComponent implements OnInit {
     this.isLoading = true;
     let { range, exerciseName } = this.searchForm.value;
     exerciseName = exerciseName ? exerciseName : '';
-    this.exerciseService.getExerciseList(this.userEmail, exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
+    this.exerciseService.getExerciseList(this.sessionStoreService.getUserEmail(), exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (res: Exercise[]) => {

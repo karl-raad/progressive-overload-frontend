@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { AuthenticationDetails, CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environment';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +18,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private router: Router, private sessionStorageService: SessionStorageService) { }
 
   onSignIn(form: NgForm) {
     if (form.valid) {
@@ -37,7 +37,7 @@ export class LoginComponent {
       let cognitoUser = new CognitoUser(userData);
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          this.authService.setUserEmail(this.email);
+          this.sessionStorageService.setUserEmail(this.email);
           this.router.navigate(["exercise-list"])
         },
         onFailure: (err) => {

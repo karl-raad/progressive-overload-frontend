@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from '../environment';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 
 @Injectable({
@@ -9,7 +9,6 @@ export class AuthService {
 
   private userPool: CognitoUserPool;
   private poolData;
-  private storageKey = 'userEmail';
 
   constructor() {
     this.poolData = {
@@ -47,19 +46,6 @@ export class AuthService {
         resolve(result);
       });
     });
-  }
-
-  setUserEmail(data: any): void {
-    sessionStorage.setItem(this.storageKey, JSON.stringify(data));
-  }
-
-  getUserEmail(): any {
-    const data = sessionStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : null;
-  }
-
-  clearUserEmail(): void {
-    sessionStorage.removeItem(this.storageKey);
   }
 
   confirmPassword(username: string, confirmationCode: string, newPassword: string): Promise<any> {
