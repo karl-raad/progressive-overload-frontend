@@ -1,0 +1,12 @@
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<form (submit)="onSignIn(signInForm)" #signInForm="ngForm">
+    <label for="email"><b>Email address</b></label>
+    <input name="email" ngModel type="email" #emailInput="ngModel" [ngModelOptions]="{standalone: true}"
+        [(ngModel)]="email" email placeholder="Enter Username" required>
+
+    <label for="password"><b>Password</b></label>
+    <input [ngModelOptions]="{standalone: true}" [(ngModel)]="password" ngModel type="password" minlength="8"
+        #passwordInput="ngModel" required name="password" placeholder="Enter Password">
+
+    <button type="submit">Login</button>
+</form>

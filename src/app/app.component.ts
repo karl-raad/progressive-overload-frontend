@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef, OnDestroy, inject, ViewChild } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
@@ -8,6 +8,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { environment } from '../environments/environment';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +26,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
     MatIconModule,
     MatSidenavModule
   ],
+  providers: [AuthService],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -32,7 +36,7 @@ export class AppComponent implements OnDestroy {
   @ViewChild('snav') sidenav!: MatSidenav;
   private _mobileQueryListener: () => void;
 
-  constructor() {
+  constructor(private router: Router, private authService: AuthService) {
     const changeDetectorRef = inject(ChangeDetectorRef);
     const media = inject(MediaMatcher);
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
@@ -41,8 +45,32 @@ export class AppComponent implements OnDestroy {
   }
 
   closeSidenav() {
-    if (this.sidenav) {
-      this.sidenav.close(); // Close the sidenav
+    if (this.sidenav)
+      this.sidenav.close();
+  }
+
+  onLogout(): void {
+    const userPool = new CognitoUserPool({
+      UserPoolId: environment.cognitoUserPoolId,
+      ClientId: environment.cognitoAppClientId,
+    });
+
+    const cognitoUser = userPool.getCurrentUser();
+
+    if (cognitoUser) {
+      cognitoUser.signOut();
+      this.router.navigate(['login'])
+        .then(() => {
+          this.authService.clearUserEmail();
+          this.closeSidenav();
+          console.log('Successfully logged out and navigated to login.');
+        })
+        .catch(err => {
+          console.error('Navigation error:', err);
+        });
+    } else {
+      console.warn('No user is currently logged in.');
+      this.router.navigate(['login']);
     }
   }
 

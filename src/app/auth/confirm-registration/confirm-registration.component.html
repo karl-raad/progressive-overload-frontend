@@ -1,0 +1,6 @@
+<form (submit)="confirmUser()">
+    <input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="username" placeholder="Username" required />
+    <input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="confirmationCode"
+        placeholder="Confirmation Code" required />
+    <button type="submit">Confirm</button>
+</form>
