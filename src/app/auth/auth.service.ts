@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environment';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,8 @@ export class AuthService {
 
   private userPool: CognitoUserPool;
   private poolData;
+  loggedInSubject = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedInSubject.asObservable();
 
   constructor() {
     this.poolData = {

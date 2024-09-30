@@ -3,7 +3,8 @@
         <span class="title">🗲 Progressive Overload</span>
         <span class="spacer"></span>
         <app-theme-toggle></app-theme-toggle>
-        <button mat-icon-button color="accent" (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+        <button [hidden]="!isLoggedIn" mat-icon-button color="accent"
+            (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
     </mat-toolbar>
 
     <mat-sidenav-container class="sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">

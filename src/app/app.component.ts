@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnDestroy, inject, ViewChild } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, inject, ViewChild, OnInit } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ExerciseListComponent } from './exercise/exercise-list/exercise-list.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -11,6 +11,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { environment } from './environment';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { SessionStorageService } from './shared/session-storage.service';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -30,18 +31,25 @@ import { SessionStorageService } from './shared/session-storage.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'progressive-overload-app';
+  isLoggedIn = false;
   mobileQuery: MediaQueryList;
   @ViewChild('snav') sidenav!: MatSidenav;
   private _mobileQueryListener: () => void;
 
-  constructor(private router: Router, private sessionStorageService: SessionStorageService) {
+  constructor(private authService: AuthService, private router: Router, private sessionStorageService: SessionStorageService) {
     const changeDetectorRef = inject(ChangeDetectorRef);
     const media = inject(MediaMatcher);
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+  }
+
+  ngOnInit(): void {
+    this.authService.isLoggedIn$.subscribe(isLoggedin => {
+      this.isLoggedIn = isLoggedin;
+    });
   }
 
   closeSidenav() {
@@ -64,6 +72,7 @@ export class AppComponent implements OnDestroy {
           this.sessionStorageService.clearUserEmail();
           this.closeSidenav();
           console.log('Successfully logged out and navigated to login.');
+          this.authService.loggedInSubject.next(false);
         })
         .catch(err => {
           console.error('Navigation error:', err);

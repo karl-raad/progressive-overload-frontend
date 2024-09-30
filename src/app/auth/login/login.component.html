@@ -1,12 +1,35 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<form (submit)="onSignIn(signInForm)" #signInForm="ngForm">
-    <label for="email"><b>Email address</b></label>
-    <input name="email" ngModel type="email" #emailInput="ngModel" [ngModelOptions]="{standalone: true}"
-        [(ngModel)]="email" email placeholder="Enter Username" required>
+<div class="main-body">
+    <h5>Sign In</h5>
+    <mat-card appearance="outlined">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <mat-card-content>
+                <div class="row">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Email</mat-label>
+                        <input matInput formControlName="email" />
+                        <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                            Please enter a valid email.
+                        </mat-error>
+                    </mat-form-field>
+                </div>
 
-    <label for="password"><b>Password</b></label>
-    <input [ngModelOptions]="{standalone: true}" [(ngModel)]="password" ngModel type="password" minlength="8"
-        #passwordInput="ngModel" required name="password" placeholder="Enter Password">
+                <mat-form-field appearance="fill">
+                    <mat-label>Password</mat-label>
+                    <input matInput type="password" formControlName="password" />
+                    <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                        Password must be at least 6 characters long.
+                    </mat-error>
+                </mat-form-field>
+                <div class="forgot-password">
+                    <button mat-button (click)="onForgotPassword()">Reset Password</button>
+                </div>
+                <div class="login-button-container">
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="loginForm.invalid">Login</button>
+                </div>
+            </mat-card-content>
 
-    <button type="submit">Login</button>
-</form>
+        </form>
+    </mat-card>
+</div>
