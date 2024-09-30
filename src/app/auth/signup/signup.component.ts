@@ -1,64 +1,50 @@
 import { Component } from '@angular/core';
-import { CognitoUserPool, CognitoUserAttribute } from 'amazon-cognito-identity-js';
-import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '../../environment';
 import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
-
-interface formDataInterface {
-  "name": string;
-  "email": string;
-  [key: string]: string;
-};
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../auth.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
+  styleUrl: './signup.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, SpinnerComponent]
+  imports: [MatSnackBarModule, MatInputModule, MatButtonModule, MatCardModule, MatFormFieldModule, CommonModule, ReactiveFormsModule, SpinnerComponent]
 })
 export class SignupComponent {
+  signupForm: FormGroup;
   isLoading: boolean = false;
-  email: string = '';
-  name: string = '';
-  password: string = '';
 
-  constructor(private router: Router) { }
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
+    this.signupForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+    });
+  }
 
-  onSignup(form: NgForm) {
-    if (form.valid) {
+  onSignup() {
+    if (this.signupForm.valid) {
       this.isLoading = true;
-      let poolData = {
-        UserPoolId: environment.cognitoUserPoolId,
-        ClientId: environment.cognitoAppClientId
-      };
-      let userPool = new CognitoUserPool(poolData);
-      let attributeList = [];
-      let formData: formDataInterface = {
-        "email": this.email,
-        "name": this.name,
-      }
-
-      for (let key in formData) {
-        let attrData = {
-          Name: key,
-          Value: formData[key]
-        }
-        let attribute = new CognitoUserAttribute(attrData);
-        attributeList.push(attribute)
-      }
-      userPool.signUp(this.email, this.password, attributeList, [], (
-        err,
-        result
-      ) => {
-        this.isLoading = false;
-        if (err) {
-          console.log(err.message || JSON.stringify(err));
-          return;
-        }
+      const { name, email, password } = this.signupForm.value;
+      this.authService.signup(name, email, password).then(() => {
+        this._snackBar.open('Registration successful! Please check your email for confirmation.', '✔', { duration: 3000 });
+        this.signupForm.reset();
         this.router.navigate(['/confirm-registration']);
-      });
+      }).catch(error => {
+        console.error('Signup error:', error);
+        this._snackBar.open('Error during signup: ' + (error.message || 'Please try again.'), '✖', { duration: 3000 });
+      })
+        .finally(() => this.isLoading = false);
+    } else {
+      this._snackBar.open('Please fill in the form correctly.', '✖', { duration: 3000 });
     }
   }
 }

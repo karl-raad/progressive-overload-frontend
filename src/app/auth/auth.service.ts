@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environment';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { BehaviorSubject } from 'rxjs';
 import { SessionStorageService } from '../shared/session-storage.service';
 
@@ -22,6 +22,21 @@ export class AuthService {
     this.userPool = new CognitoUserPool(this.poolData);
   }
 
+  signup(name: string, email: string, password: string): Promise<any> {
+    const userAttributes = [
+      new CognitoUserAttribute({ Name: 'email', Value: email, }),
+      new CognitoUserAttribute({ Name: 'name', Value: name, }),
+    ];
+
+    return new Promise((resolve, reject) => {
+      this.userPool.signUp(email, password, userAttributes, [], (err, result) => {
+        if (err)
+          return reject(err);
+        resolve(result);
+      });
+    });
+  }
+
   login(email: string, password: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const authenticationDetails = new AuthenticationDetails({
@@ -29,8 +44,7 @@ export class AuthService {
         Password: password,
       });
 
-      const userPool = new CognitoUserPool(this.poolData);
-      const userData = { Username: email, Pool: userPool };
+      const userData = { Username: email, Pool: this.userPool };
       const cognitoUser = new CognitoUser(userData);
 
       cognitoUser.authenticateUser(authenticationDetails, {

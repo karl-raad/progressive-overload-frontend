@@ -1,6 +1,32 @@
-<form (submit)="confirmUser()">
-    <input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="username" placeholder="Username" required />
-    <input type="text" [ngModelOptions]="{standalone: true}" [(ngModel)]="confirmationCode"
-        placeholder="Confirmation Code" required />
-    <button type="submit">Confirm</button>
-</form>
+<app-spinner [isLoading]="isLoading"></app-spinner>
+<div class="main-body">
+    <h5>Confirm User</h5>
+    <mat-card appearance="outlined">
+        <form [formGroup]="confirmationForm" (ngSubmit)="confirmUser()">
+            <mat-card-content>
+                <mat-form-field appearance="fill">
+                    <mat-label>Username</mat-label>
+                    <input matInput formControlName="username" required />
+                    <mat-error
+                        *ngIf="confirmationForm.get('username')?.hasError('required') && confirmationForm.get('username')?.touched">
+                        Username is required.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Confirmation Code</mat-label>
+                    <input matInput formControlName="confirmationCode" required />
+                    <mat-error
+                        *ngIf="confirmationForm.get('confirmationCode')?.hasError('required') && confirmationForm.get('confirmationCode')?.touched">
+                        Confirmation Code is required.
+                    </mat-error>
+                </mat-form-field>
+
+                <div class="confirm-button-container">
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="confirmationForm.invalid">Confirm</button>
+                </div>
+            </mat-card-content>
+        </form>
+    </mat-card>
+</div>
