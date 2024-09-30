@@ -156,12 +156,12 @@ export class ExerciseAddEditComponent implements OnInit {
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
-              this._snackBar.open('Exercise details updated successfully!', '✔', { duration: 2000 });
+              this._snackBar.open('Exercise details updated successfully!', '️✔️', { duration: 2000 });
               this.dialogRef.close(this.exerciseForm.value);
             },
             error: (err: any) => {
               console.error(err);
-              this._snackBar.open('Error while updating the exercise!', '✘', { duration: 2000 });
+              this._snackBar.open('Error while updating the exercise!', '❌', { duration: 2000 });
             },
           });
       } else {
@@ -169,12 +169,12 @@ export class ExerciseAddEditComponent implements OnInit {
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
-              this._snackBar.open('Exercise added successfully!', '✔', { duration: 2000 });
+              this._snackBar.open('Exercise added successfully!', '️✔️', { duration: 2000 });
               this.dialogRef.close(this.exerciseForm.value);
             },
             error: (err: any) => {
               console.error(err);
-              this._snackBar.open('Error while adding the exercise!', '✘', { duration: 2000 });
+              this._snackBar.open('Error while adding the exercise!', '❌', { duration: 2000 });
             },
           });
       }

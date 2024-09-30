@@ -122,7 +122,7 @@ export class ExerciseChartComponent implements OnInit {
         },
         error: (err) => {
           console.log(err);
-          this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
+          this._snackBar.open('Error while searching exercises!', '❌', { duration: 2000 });
         }
       });
   }

@@ -110,7 +110,7 @@ export class ExerciseListComponent implements OnInit {
           },
           error: (err) => {
             console.log(err);
-            this._snackBar.open('Error while initializing exercises data!', '✘', { duration: 2000 });
+            this._snackBar.open('Error while initializing exercises data!', '❌', { duration: 2000 });
           }
         });
     }
@@ -156,7 +156,7 @@ export class ExerciseListComponent implements OnInit {
         },
         error: (err) => {
           console.log(err);
-          this._snackBar.open('Error while searching exercises!', '✘', { duration: 2000 });
+          this._snackBar.open('Error while searching exercises!', '❌', { duration: 2000 });
         }
       });
   }
@@ -180,12 +180,12 @@ export class ExerciseListComponent implements OnInit {
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (res) => {
-              this._snackBar.open('Exercise deleted successfully!', '✔', { duration: 2000 });
+              this._snackBar.open('Exercise deleted successfully!', '️✔️', { duration: 2000 });
               this.dataSource.data = this.dataSource.data.filter(item => item.exerciseId !== row.exerciseId)
             },
             error: (err) => {
               console.log(err);
-              this._snackBar.open('Error while deleting exercise!', '✘', { duration: 2000 });
+              this._snackBar.open('Error while deleting exercise!', '❌', { duration: 2000 });
             }
           });
       }

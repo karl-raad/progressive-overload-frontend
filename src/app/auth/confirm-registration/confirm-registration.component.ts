@@ -22,12 +22,12 @@ export class ConfirmRegistrationComponent {
   confirmUser() {
     this.authService.confirmUser(this.username, this.confirmationCode)
       .then((result) => {
-        this._snackBar.open('User confirmed successfully!', '✔', { duration: 2000 });
+        this._snackBar.open('User confirmed successfully!', '️✔️', { duration: 2000 });
         this.router.navigate(['/exercise-list']);
       })
       .catch((error) => {
         console.log(`Error: ${error.message}`);
-        this._snackBar.open('User confirmation failed!', '✘', { duration: 2000 });
+        this._snackBar.open('User confirmation failed!', '❌', { duration: 2000 });
       });
   }
 }
