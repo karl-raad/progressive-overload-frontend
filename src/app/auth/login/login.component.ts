@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
-import { SessionStorageService } from '../../shared/session-storage.service';
 import { AuthService } from '../auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,13 +22,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     CommonModule,
     ReactiveFormsModule,
     MatSnackBarModule,
+    RouterModule,
     SpinnerComponent]
 })
 export class LoginComponent implements OnInit {
   isLoading: boolean = false;
   loginForm: FormGroup;
 
-  constructor(private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router, private sessionStorageService: SessionStorageService) {
+  constructor(private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]

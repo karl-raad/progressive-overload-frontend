@@ -24,12 +24,16 @@
                 <div class="forgot-password">
                     <button mat-button (click)="onForgotPassword()">Reset Password</button>
                 </div>
+
                 <div class="login-button-container">
                     <button mat-raised-button color="primary" type="submit"
                         [disabled]="loginForm.invalid">Login</button>
                 </div>
             </mat-card-content>
-
         </form>
     </mat-card>
+
+    <div class="signup-link-container">
+        <p>Don't have an account? <a mat-button routerLink="/signup">Sign Up</a></p>
+    </div>
 </div>
