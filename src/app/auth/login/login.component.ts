@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -25,7 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     SpinnerComponent]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   isLoading: boolean = false;
   loginForm: FormGroup;
 
@@ -34,6 +34,10 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn())
+      this.router.navigate(['exercise-list']);
   }
 
   onForgotPassword(): void {

@@ -31,6 +31,7 @@ export class AuthService {
         isAuth = session.isValid();
       })
     }
+    this.loggedInSubject.next(isAuth);
     return isAuth;
   }
 
