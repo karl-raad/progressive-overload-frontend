@@ -15,9 +15,9 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Confirmation Code</mat-label>
-                    <input matInput formControlName="confirmationCode" required />
+                    <input matInput formControlName="verificationCode" required />
                     <mat-error
-                        *ngIf="confirmationForm.get('confirmationCode')?.hasError('required') && confirmationForm.get('confirmationCode')?.touched">
+                        *ngIf="confirmationForm.get('verificationCode')?.hasError('required') && confirmationForm.get('verificationCode')?.touched">
                         Confirmation Code is required.
                     </mat-error>
                 </mat-form-field>

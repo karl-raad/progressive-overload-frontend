@@ -8,7 +8,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { environment } from './environment';
+import { environment } from '../environments/environment';
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 import { SessionStorageService } from './shared/session-storage.service';
 import { AuthService } from './auth/auth.service';

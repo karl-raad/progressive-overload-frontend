@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../environment';
+import { environment } from '../../environments/environment';
 import { AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { BehaviorSubject } from 'rxjs';
 import { SessionStorageService } from '../shared/session-storage.service';
@@ -75,14 +75,14 @@ export class AuthService {
     return isAuth;
   }
 
-  confirmUser(username: string, confirmationCode: string): Promise<any> {
+  confirmUser(username: string, verificationCode: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const userData = {
         Username: username,
         Pool: this.userPool,
       };
       const cognitoUser = new CognitoUser(userData);
-      cognitoUser.confirmRegistration(confirmationCode, true, (err, result) => {
+      cognitoUser.confirmRegistration(verificationCode, true, (err, result) => {
         if (err) {
           reject(err);
           return;
@@ -92,14 +92,14 @@ export class AuthService {
     });
   }
 
-  confirmPassword(username: string, confirmationCode: string, newPassword: string): Promise<any> {
+  confirmPassword(username: string, verificationCode: string, newPassword: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const userData = {
         Username: username,
         Pool: this.userPool,
       };
       const cognitoUser = new CognitoUser(userData);
-      cognitoUser.confirmPassword(confirmationCode, newPassword, {
+      cognitoUser.confirmPassword(verificationCode, newPassword, {
         onSuccess: () => resolve('Password reset successful!'),
         onFailure: (err) => reject(err),
       });

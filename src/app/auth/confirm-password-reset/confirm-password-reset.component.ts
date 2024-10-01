@@ -32,15 +32,15 @@ export class ConfirmPasswordResetComponent {
     this.resetForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      confirmationCode: ['', Validators.required]
+      verificationCode: ['', Validators.required]
     });
   }
 
   onSubmit() {
     if (this.resetForm.valid) {
       this.isLoading = true;
-      const { email, newPassword, confirmationCode } = this.resetForm.value;
-      this.authService.confirmPassword(email, newPassword, confirmationCode)
+      const { email, newPassword, verificationCode } = this.resetForm.value;
+      this.authService.confirmPassword(email, verificationCode, newPassword)
         .then(() => {
           this._snackBar.open('Password reset successfully!', '️✔️', { duration: 2000 });
           this.router.navigate(['login']);

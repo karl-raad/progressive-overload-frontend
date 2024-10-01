@@ -33,15 +33,15 @@ export class ConfirmRegistrationComponent {
   constructor(private fb: FormBuilder, private authService: AuthService, private _snackBar: MatSnackBar, private router: Router) {
     this.confirmationForm = this.fb.group({
       username: ['', Validators.required],
-      confirmationCode: ['', Validators.required],
+      verificationCode: ['', Validators.required],
     });
   }
 
   confirmUser() {
     if (this.confirmationForm.valid) {
       this.isLoading = true;
-      const { username, confirmationCode } = this.confirmationForm.value;
-      this.authService.confirmUser(username, confirmationCode)
+      const { username, verificationCode } = this.confirmationForm.value;
+      this.authService.confirmUser(username, verificationCode)
         .then((result) => {
           this._snackBar.open('User confirmed successfully!', '️✔️', { duration: 2000 });
           this.router.navigate(['/exercise-list']);
