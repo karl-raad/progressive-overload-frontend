@@ -1,6 +1,7 @@
 <div class="row toolbar-container" [class.is-mobile]="mobileQuery.matches">
     <mat-toolbar color="primary">
-        <span class="title">🗲 Progressive Overload</span>
+        <img src="assets/favicon-light.ico" alt="Progressive Overload Icon" class="toolbar-icon" />
+        <span class="title">Progressive Overload</span>
         <span class="spacer"></span>
         <app-theme-toggle></app-theme-toggle>
         <button [hidden]="!isLoggedIn" mat-icon-button color="accent"
