@@ -101,8 +101,14 @@ export class ExerciseAddEditComponent implements OnInit {
   }
 
   addSet(): void {
-    this.exerciseReps.push(new FormControl(1, Validators.required));
-    this.exerciseWeights.push(new FormControl(1, Validators.required));
+    let initReps = 1;
+    let initWeights = 1;
+    if (this.exerciseReps && this.exerciseReps.length > 0)
+      initReps = this.exerciseReps.at(this.exerciseReps.length - 1).value;
+    if (this.exerciseWeights && this.exerciseWeights.length > 0)
+      initWeights = this.exerciseWeights.at(this.exerciseWeights.length - 1).value;
+    this.exerciseReps.push(new FormControl(initReps, Validators.required));
+    this.exerciseWeights.push(new FormControl(initWeights, Validators.required));
     this.updateVolume();
   }
 
