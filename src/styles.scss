@@ -8,6 +8,10 @@
     @include mat.all-component-themes(themes.$dark-theme);
     background-color: #121212;
     color: #ffffff;
+
+    .mat-sidenav {
+        background-color: #4e444b;
+    }
 }
 
 body {
@@ -21,6 +25,11 @@ body {
 
     body {
         background-color: #f4f4f4; // Light theme background
+
+        .mat-sidenav {
+            background-color: #e0e2ec;
+        }
+
     }
 }
 
