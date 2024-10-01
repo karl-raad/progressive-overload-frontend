@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-confirm-registration',
@@ -30,9 +31,8 @@ export class ConfirmRegistrationComponent {
   confirmationForm: FormGroup;
   isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private _snackBar: MatSnackBar, private router: Router) {
+  constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private _snackBar: MatSnackBar, private router: Router) {
     this.confirmationForm = this.fb.group({
-      username: ['', Validators.required],
       verificationCode: ['', Validators.required],
     });
   }
@@ -40,8 +40,8 @@ export class ConfirmRegistrationComponent {
   confirmUser() {
     if (this.confirmationForm.valid) {
       this.isLoading = true;
-      const { username, verificationCode } = this.confirmationForm.value;
-      this.authService.confirmUser(username, verificationCode)
+      const { verificationCode } = this.confirmationForm.value;
+      this.authService.confirmUser(this.sessionStoreService.getUserEmail(), verificationCode)
         .then((result) => {
           this._snackBar.open('User confirmed successfully!', '️✔️', { duration: 2000 });
           this.router.navigate(['/exercise-list']);

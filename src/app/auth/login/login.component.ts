@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +30,7 @@ export class LoginComponent implements OnInit {
   isLoading: boolean = false;
   loginForm: FormGroup;
 
-  constructor(private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private sessionStoreService: SessionStorageService, private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -38,21 +39,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.authService.isLoggedIn())
       this.router.navigate(['exercise-list']);
-  }
-
-  onForgotPassword(): void {
-    if (this.loginForm.get('email')?.valid) {
-      this.isLoading = true;
-      this.authService.requestPasswordReset(this.loginForm.value.email)
-        .then(() => {
-          this._snackBar.open(`Password reset email sent!`, '✔️', { duration: 2000 });
-          this.router.navigate(['confirm-password-reset']);
-        })
-        .catch(error => {
-          this._snackBar.open('Error sending password reset email', '❌', { duration: 2000 });
-        })
-        .finally(() => this.isLoading = false);
-    }
   }
 
   onSubmit() {

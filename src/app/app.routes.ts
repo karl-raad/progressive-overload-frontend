@@ -6,10 +6,12 @@ import { AuthGuard } from './auth/auth.guard';
 import { LoginComponent } from './auth/login/login.component';
 import { ConfirmRegistrationComponent } from './auth/confirm-registration/confirm-registration.component';
 import { ConfirmPasswordResetComponent } from './auth/confirm-password-reset/confirm-password-reset.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'signup', component: SignupComponent },
+    { path: 'forgot-password', component: ForgotPasswordComponent },
     { path: 'confirm-registration', component: ConfirmRegistrationComponent },
     { path: 'confirm-password-reset', component: ConfirmPasswordResetComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },

@@ -5,15 +5,6 @@
         <form [formGroup]="confirmationForm" (ngSubmit)="confirmUser()">
             <mat-card-content>
                 <mat-form-field appearance="fill">
-                    <mat-label>Username</mat-label>
-                    <input matInput formControlName="username" required />
-                    <mat-error
-                        *ngIf="confirmationForm.get('username')?.hasError('required') && confirmationForm.get('username')?.touched">
-                        Username is required.
-                    </mat-error>
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
                     <mat-label>Confirmation Code</mat-label>
                     <input matInput formControlName="verificationCode" required />
                     <mat-error
@@ -24,7 +15,7 @@
 
                 <div class="confirm-button-container">
                     <button mat-raised-button color="primary" type="submit"
-                        [disabled]="confirmationForm.invalid">Confirm</button>
+                        [disabled]="confirmationForm.invalid">Verify</button>
                 </div>
             </mat-card-content>
         </form>

@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-signup',
@@ -22,7 +23,7 @@ export class SignupComponent {
   signupForm: FormGroup;
   isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
+  constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -36,6 +37,7 @@ export class SignupComponent {
       const { name, email, password } = this.signupForm.value;
       this.authService.signup(name, email, password).then(() => {
         this._snackBar.open('Registration successful! Please check your email for confirmation.', '✔', { duration: 3000 });
+        this.sessionStoreService.setUserEmail(email);
         this.signupForm.reset();
         this.router.navigate(['/confirm-registration']);
       }).catch(error => {

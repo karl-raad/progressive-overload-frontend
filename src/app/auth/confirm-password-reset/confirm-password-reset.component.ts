@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
+import { SessionStorageService } from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-confirm-password-reset',
@@ -28,9 +29,8 @@ export class ConfirmPasswordResetComponent {
   resetForm: FormGroup;
   isLoading = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) {
+  constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) {
     this.resetForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       verificationCode: ['', Validators.required]
     });
@@ -39,8 +39,8 @@ export class ConfirmPasswordResetComponent {
   onSubmit() {
     if (this.resetForm.valid) {
       this.isLoading = true;
-      const { email, newPassword, verificationCode } = this.resetForm.value;
-      this.authService.confirmPassword(email, verificationCode, newPassword)
+      const { newPassword, verificationCode } = this.resetForm.value;
+      this.authService.confirmPassword(this.sessionStoreService.getUserEmail(), verificationCode, newPassword)
         .then(() => {
           this._snackBar.open('Password reset successfully!', '️✔️', { duration: 2000 });
           this.router.navigate(['login']);
