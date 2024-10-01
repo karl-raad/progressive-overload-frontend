@@ -107,18 +107,23 @@ export class ExerciseChartComponent implements OnInit {
       .subscribe({
         next: (res: Exercise[]) => {
           this.exerciseHistory = res
-          this.lineChartData = {
-            labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM HH:mm') || ''),
-            datasets: [
-              {
-                data: this.exerciseHistory.map(ex => ex.exerciseVolume),
-                label: 'Volume Progress',
-                tension: 0.5,
-                borderColor: '#ff4081',
-                backgroundColor: 'rgba(255,0,0,0.3)'
-              }
-            ]
-          };
+
+          if (res.length === 0)
+            this._snackBar.open('No matching data found!', '⚠️', { duration: 2000 });
+          else {
+            this.lineChartData = {
+              labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM HH:mm') || ''),
+              datasets: [
+                {
+                  data: this.exerciseHistory.map(ex => ex.exerciseVolume),
+                  label: 'Volume Progress',
+                  tension: 0.5,
+                  borderColor: '#ff4081',
+                  backgroundColor: 'rgba(255,0,0,0.3)'
+                }
+              ]
+            };
+          }
         },
         error: (err) => {
           console.log(err);
