@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartOptions, ChartType } from "chart.js";
+import { ChartConfiguration, ChartOptions } from "chart.js";
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -59,7 +59,8 @@ export class ExerciseChartComponent implements OnInit {
     ]
   };
   public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true
+    responsive: true,
+    maintainAspectRatio: false,
   };
   public lineChartLegend = true;
 

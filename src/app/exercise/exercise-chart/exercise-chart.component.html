@@ -35,8 +35,8 @@
     <br>
     <div [hidden]="!exerciseHistory || exerciseHistory.length === 0">
         <div class="chart-container">
-            <canvas baseChart width="400" height="250" [type]="'line'" [data]="lineChartData"
-                [options]="lineChartOptions" [legend]="lineChartLegend">
+            <canvas baseChart [type]="'line'" [data]="lineChartData" [options]="lineChartOptions"
+                [legend]="lineChartLegend">
             </canvas>
         </div>
     </div>

@@ -44,7 +44,7 @@ export class ConfirmRegistrationComponent {
       this.authService.confirmUser(this.sessionStoreService.getUserEmail(), verificationCode)
         .then((result) => {
           this._snackBar.open('User confirmed successfully!', '️✔️', { duration: 2000 });
-          this.router.navigate(['/exercise-list']);
+          this.router.navigate(['/personal-best']);
         })
         .catch((error) => {
           console.log(`Error: ${error.message}`);

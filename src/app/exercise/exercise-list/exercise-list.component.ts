@@ -16,12 +16,12 @@ import { MatCardModule } from '@angular/material/card';
 import { finalize, map, startWith } from 'rxjs';
 import { SpinnerComponent } from "../../shared/spinner/spinner.component";
 import { Exercise, ExerciseData } from '../exercise-interface';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { SessionStorageService } from '../../shared/session-storage.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-exercise-list',
@@ -42,19 +42,11 @@ import { SessionStorageService } from '../../shared/session-storage.service';
     ReactiveFormsModule,
     MatDatepickerModule,
     MatAutocompleteModule,
-    MatOptionModule
+    MatOptionModule,
+    MatTooltipModule
   ],
   templateUrl: './exercise-list.component.html',
-  styleUrl: './exercise-list.component.scss',
-  animations: [
-    trigger('celebrate', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0)' }),
-        animate('0.5s ease-out', style({ opacity: 1, transform: 'scale(1.5)' })),
-        animate('0.5s ease-in', style({ opacity: 0, transform: 'scale(0)' })),
-      ]),
-    ]),
-  ],
+  styleUrl: './exercise-list.component.scss'
 })
 export class ExerciseListComponent implements OnInit {
 
@@ -69,7 +61,6 @@ export class ExerciseListComponent implements OnInit {
 
   dataSource!: MatTableDataSource<any>;
   isLoading = false;
-  showStar = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -196,13 +187,6 @@ export class ExerciseListComponent implements OnInit {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
       data
     });
-
-    // dialogRef.afterClosed().subscribe({
-    //   next: (val) => {
-    // if (val)
-    //   this.search();
-    // }
-    // });
   }
 
   openAddExerciseDialog() {
@@ -210,20 +194,6 @@ export class ExerciseListComponent implements OnInit {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
       data
     });
-    // dialogRef.afterClosed().subscribe({
-    //   next: (val: Exercise) => {
-    //     this.showStar = true;
-    //     this._snackBar.open('New Personal Best!', '🏆');
-
-    //     if (val && !this.dataSource)
-    //       this.search();
-
-    //     if (val && this.dataSource) {
-    //       this.dataSource.data.push(val);
-    //       this.updateDataSource(this.dataSource.data);
-    //     }
-    //   },
-    // });
   }
 
 }

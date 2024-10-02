@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Exercise, ExerciseData } from './exercise-interface';
-import { AppConstants } from '../app-constants';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExerciseService {
-  baseUrl = AppConstants.API_URL_DEV;
-  // baseUrl = AppConstants.API_URL_PRD;
+  baseUrl = environment.API_URL;
 
   constructor(private httpClient: HttpClient) { }
 

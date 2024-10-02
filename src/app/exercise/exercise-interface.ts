@@ -6,6 +6,7 @@ export interface Exercise {
     exerciseWeights: number[];
     exerciseVolume: number;
     userEmail: string;
+    isPersonalBest: number;
 }
 
 export interface ExerciseData {

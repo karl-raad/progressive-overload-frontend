@@ -1,7 +1,4 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
-<div *ngIf="showStar" @celebrate class="star-icon">
-    ⭐️
-</div>
 <div class="main-body">
     <div class="title-container">
         <h5>Exercise History</h5>
@@ -67,10 +64,13 @@
             <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef>Action</th>
                 <td mat-cell *matCellDef="let row">
-                    <span (click)="openEditForm(row)" class="action-icon">
+                    <span *ngIf="row.isPersonalBest" class="action-icon star-action-icon">
+                        <mat-icon matTooltip="Beat">star</mat-icon>
+                    </span>
+                    <span (click)="openEditForm(row)" class="action-icon" matTooltip="Edit">
                         <mat-icon color="primary">edit</mat-icon>
                     </span>
-                    <span (click)="deleteExercise(row)" class="action-icon">
+                    <span (click)="deleteExercise(row)" class="action-icon" matTooltip="Delete">
                         <mat-icon color="warn">delete</mat-icon>
                     </span>
                 </td>

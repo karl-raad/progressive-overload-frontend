@@ -1,24 +1,24 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule, FormArray, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ExerciseService } from '../exercise.service';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
-import { finalize, map, startWith } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
-import { Exercise, ExerciseData } from '../exercise-interface';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ExerciseAddEditComponent } from '../../exercise/exercise-add-edit/exercise-add-edit.component';
+import { ExerciseService } from '../../exercise/exercise.service';
 import { SessionStorageService } from '../../shared/session-storage.service';
+import { finalize } from 'rxjs';
+import { Exercise } from '../../exercise/exercise-interface';
 
 @Component({
-  selector: 'app-exercise-add-edit',
+  selector: 'app-beat-personal-best',
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -33,17 +33,14 @@ import { SessionStorageService } from '../../shared/session-storage.service';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     SpinnerComponent,
-    MatCardModule,
-    MatAutocompleteModule
+    MatCardModule
   ],
-  templateUrl: './exercise-add-edit.component.html',
-  styleUrl: './exercise-add-edit.component.scss'
+  templateUrl: './beat-personal-best.component.html',
+  styleUrl: './beat-personal-best.component.scss'
 })
-export class ExerciseAddEditComponent implements OnInit {
-
+export class BeatPersonalBestComponent implements OnInit {
   isLoading = false;
   exerciseForm: FormGroup;
-  filteredExercises: ExerciseData[] = [];
 
   constructor(
     private exerciseService: ExerciseService,
@@ -51,7 +48,7 @@ export class ExerciseAddEditComponent implements OnInit {
     private dialogRef: MatDialogRef<ExerciseAddEditComponent>,
     private formBuilder: FormBuilder,
     private sessionStoreService: SessionStorageService,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: Exercise) {
 
     this.exerciseForm = this.formBuilder.group({
       exerciseDate: [new Date(), Validators.required],
@@ -61,38 +58,19 @@ export class ExerciseAddEditComponent implements OnInit {
       exerciseVolume: [1, Validators.required],
     });
   }
-  ngOnInit(): void {
-    if (!this.isDataArray()) {
-      this.exerciseForm.patchValue({
-        exerciseDate: this.data.exerciseDate,
-        exerciseName: this.data.exerciseName,
-        exerciseVolume: this.data.exerciseVolume
-      });
-      this.data.exerciseReps.forEach((rep: number, index: number) => {
-        this.exerciseReps.push(new FormControl(rep, Validators.required));
-        this.exerciseWeights.push(new FormControl(this.data.exerciseWeights[index] || 1, Validators.required));
-      });
-    }
-    else {
-      this.addSet();
-      this.exerciseForm.get('exerciseName')!.valueChanges
-        .pipe(
-          startWith(''),
-          map(value => this._filter(value)),
-          map(filtered => filtered.sort((a, b) => a.exerciseDataName.localeCompare(b.exerciseDataName)))
-        )
-        .subscribe(filtered => {
-          this.filteredExercises = filtered;
-        });
-    }
 
+  ngOnInit(): void {
+    this.exerciseForm.patchValue({
+      exerciseDate: this.data.exerciseDate,
+      exerciseName: this.data.exerciseName,
+      exerciseVolume: this.data.exerciseVolume,
+    });
+    this.data.exerciseReps.forEach((rep: number, index: number) => {
+      this.exerciseReps.push(new FormControl(rep, Validators.required));
+      this.exerciseWeights.push(new FormControl(this.data.exerciseWeights[index] || 1, Validators.required));
+    });
     this.exerciseReps.valueChanges.subscribe(() => this.updateVolume());
     this.exerciseWeights.valueChanges.subscribe(() => this.updateVolume());
-  }
-
-  private _filter(value: string): any[] {
-    const filterValue = value.toLowerCase();
-    return this.data?.filter((exercise: ExerciseData) => exercise.exerciseDataName.toLowerCase().includes(filterValue));
   }
 
   updateVolume(): void {
@@ -146,10 +124,6 @@ export class ExerciseAddEditComponent implements OnInit {
     return this.exerciseWeights.at(index) as FormControl;
   }
 
-  isDataArray(): boolean {
-    return Array.isArray(this.data);
-  }
-
   onSubmit() {
     if (this.exerciseForm.valid) {
       this.isLoading = true;
@@ -157,34 +131,38 @@ export class ExerciseAddEditComponent implements OnInit {
         ...this.exerciseForm.value,
         userEmail: this.sessionStoreService.getUserEmail()
       };
-      if (!this.isDataArray()) {
-        this.exerciseService.updateExercise(this.data.exerciseId, exerciseData)
-          .pipe(finalize(() => this.isLoading = false))
+      exerciseData.exerciseDate = new Date();
+      if (exerciseData.exerciseVolume > this.data.exerciseVolume) {
+        this.data.isPersonalBest = 0; // old PB
+        exerciseData.isPersonalBest = 1; // new PB
+        this.exerciseService.updateExercise(this.data.exerciseId, this.data).pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
-              this._snackBar.open('Exercise details updated successfully!', '️✔️', { duration: 2000 });
-              this.dialogRef.close(this.exerciseForm.value);
+              this.dialogRef.close(exerciseData.exerciseVolume > this.data.exerciseVolume);
             },
             error: (err: any) => {
               console.error(err);
               this._snackBar.open('Error while updating the exercise!', '❌', { duration: 2000 });
             },
           });
-      } else {
-        this.exerciseService.addExercise(exerciseData)
-          .pipe(finalize(() => this.isLoading = false))
-          .subscribe({
-            next: (val: any) => {
-              this._snackBar.open('Exercise added successfully!', '️✔️', { duration: 2000 });
-              this.dialogRef.close(this.exerciseForm.value);
-            },
-            error: (err: any) => {
-              console.error(err);
-              this._snackBar.open('Error while adding the exercise!', '❌', { duration: 2000 });
-            },
-          });
       }
+      else
+        exerciseData.isPersonalBest = 0; // no new PB
+      this.addExercise(exerciseData);
     }
   }
 
+  addExercise(exercise: Exercise) {
+    this.exerciseService.addExercise(exercise)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (val: any) => {
+          this.dialogRef.close(exercise.exerciseVolume > this.data.exerciseVolume);
+        },
+        error: (err: any) => {
+          console.error(err);
+          this._snackBar.open('Error while adding the exercise!', '❌', { duration: 2000 });
+        },
+      });
+  }
 }

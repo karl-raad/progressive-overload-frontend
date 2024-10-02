@@ -1,5 +1,5 @@
 <div mat-dialog-title>
-    <h5>{{isDataArray() ? 'Add': 'Edit'}} Exercise</h5>
+    <h5>Beat Personal Best</h5>
 </div>
 <app-spinner [isLoading]="isLoading"></app-spinner>
 <form [formGroup]="exerciseForm" (ngSubmit)="onSubmit()">
@@ -7,19 +7,13 @@
         <div>
             <mat-form-field appearance="outline">
                 <mat-label>Date</mat-label>
-                <input [readonly]="!isDataArray()" matInput [matDatepicker]="picker" formControlName="exerciseDate">
+                <input [readonly]="true" matInput [matDatepicker]="picker" formControlName="exerciseDate">
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker [disabled]="!isDataArray()" #picker></mat-datepicker>
+                <mat-datepicker [disabled]="true" #picker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Name</mat-label>
-                <input [readonly]="!isDataArray()" type="text" matInput formControlName="exerciseName"
-                    [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let exercise of filteredExercises" [value]="exercise.exerciseDataName">
-                        {{ exercise.exerciseDataName }}
-                    </mat-option>
-                </mat-autocomplete>
+                <input [readonly]="true" type="text" matInput formControlName="exerciseName">
             </mat-form-field>
         </div>
         <br>
@@ -44,7 +38,7 @@
     </div>
     <div mat-dialog-actions>
         <h6 class="volume-header">Volume: <span class="volume-value"><b>{{ totalVolume}}</b></span></h6>
-        <button mat-raised-button color="primary" type="submit">{{isDataArray() ? 'Save':'Update'}}</button>
+        <button mat-raised-button color="primary" type="submit">Save</button>
         <button mat-raised-button type="button" color="secondary" [mat-dialog-close]=" false">Cancel</button>
     </div>
 </form>

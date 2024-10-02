@@ -1,0 +1,27 @@
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+mat-form-field {
+    width: 100%;
+    margin-right: 10px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.remove-button {
+    margin-top: 7px;
+    width: 110px;
+}
+
+.volume-value {
+    color: #3f51b5;
+}
+
+.volume-header {
+    margin-right: auto;
+    margin-bottom: 0;
+}
