@@ -28,6 +28,15 @@ export class SessionStorageService {
     return data ? JSON.parse(data) : null;
   }
 
+  setUserName(data: any): void {
+    sessionStorage.setItem(AppConstants.USER_NAME, JSON.stringify(data));
+  }
+
+  getUserName(): any {
+    const data = sessionStorage.getItem(AppConstants.USER_NAME);
+    return data ? JSON.parse(data) : null;
+  }
+
   clearUserEmail(): void {
     sessionStorage.removeItem(AppConstants.USER_EMAIL);
   }

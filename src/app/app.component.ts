@@ -37,6 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
   mobileQuery: MediaQueryList;
   @ViewChild('snav') sidenav!: MatSidenav;
   private _mobileQueryListener: () => void;
+  username = '';
 
   constructor(private authService: AuthService, private router: Router, private sessionStorageService: SessionStorageService) {
     const changeDetectorRef = inject(ChangeDetectorRef);
@@ -49,6 +50,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.isLoggedIn$.subscribe(isLoggedin => {
       this.isLoggedIn = isLoggedin;
+      if (this.isLoggedIn)
+        this.username = this.sessionStorageService.getUserName();
     });
   }
 

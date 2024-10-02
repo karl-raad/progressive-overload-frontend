@@ -56,3 +56,12 @@ mat-sidenav {
     width: fit-content;
     height: fit-content;
 }
+
+.user-info {
+    display: flex;
+    margin: 13px;
+}
+
+.user-info mat-icon {
+    margin-right: 8px;
+}

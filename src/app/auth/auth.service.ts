@@ -50,8 +50,20 @@ export class AuthService {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
           this.sessionStorageService.setUserEmail(email);
-          this.loggedInSubject.next(true);
-          resolve(result);
+
+          cognitoUser.getUserAttributes((err, attributes) => {
+            if (err) {
+              console.log(err.message || JSON.stringify(err));
+              reject(err);
+              return;
+            }
+            const nameAttribute = attributes?.find(attr => attr.getName() === 'name');
+            if (nameAttribute)
+              this.sessionStorageService.setUserName(nameAttribute.getValue());
+
+            this.loggedInSubject.next(true);
+            resolve(result);
+          });
         },
         onFailure: (err) => {
           console.log(err.message || JSON.stringify(err));

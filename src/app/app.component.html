@@ -12,6 +12,10 @@
         <mat-sidenav class="mat-sidenav" #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
             [fixedInViewport]="mobileQuery.matches" fixedTopGap="56" position="end">
             <mat-nav-list>
+                <div class="user-info">
+                    <mat-icon>person</mat-icon>
+                    <span><strong>Hello {{username}}!</strong></span>
+                </div>
                 <a mat-list-item routerLink="/personal-best" (click)="closeSidenav()">Personal Bests</a>
                 <a mat-list-item routerLink="/exercise-list" (click)="closeSidenav()">Exercise History</a>
                 <a mat-list-item routerLink="/exercise-chart" (click)="closeSidenav()">Exercise Chart</a>
