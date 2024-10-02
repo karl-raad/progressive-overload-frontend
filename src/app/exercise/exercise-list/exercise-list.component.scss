@@ -39,6 +39,10 @@ mat-form-field {
   text-align: center;
 }
 
+.no-match {
+  text-align: center !important;
+}
+
 .action-icon {
   margin: 3px;
 }
@@ -61,16 +65,11 @@ mat-form-field {
 
 .star-icon {
   position: absolute;
-  /* Position it wherever you want */
-  top: 50px;
-  /* Adjust based on your layout */
+  top: 6%;
   left: 50%;
-  /* Center horizontally */
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   font-size: 100px;
-  /* Adjust size as needed */
-  z-index: 10;
-  /* Ensure it appears above other content */
+  z-index: 1000000;
 }
 
 @media (max-width: 600px) {

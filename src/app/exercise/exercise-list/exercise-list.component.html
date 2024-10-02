@@ -1,4 +1,5 @@
 <app-spinner [isLoading]="isLoading"></app-spinner>
+<div *ngIf="showStar" @celebrate class="star-icon">⭐️</div>
 <div class="main-body">
     <div class="title-container">
         <h5>Exercise History</h5>
@@ -43,7 +44,7 @@
         <table mat-table [dataSource]="dataSource" matSort class="exercise-list-table">
             <ng-container matColumnDef="exerciseDate">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-                <td mat-cell *matCellDef="let row"> {{row.exerciseDate | date:'dd/MM/yyyy'}}</td>
+                <td mat-cell *matCellDef="let row"> {{row.exerciseDate | date:'dd/MM/yyyy hh:mm'}}</td>
             </ng-container>
             <ng-container matColumnDef="exerciseName">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -64,7 +65,7 @@
             <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef>Action</th>
                 <td mat-cell *matCellDef="let row">
-                    <span *ngIf="row.isPersonalBest" class="action-icon star-action-icon">
+                    <span *ngIf="row.isPersonalBest" (click)="beatPB(row)" class="action-icon star-action-icon">
                         <mat-icon matTooltip="Beat">star</mat-icon>
                     </span>
                     <span (click)="openEditForm(row)" class="action-icon" matTooltip="Edit">
@@ -80,7 +81,7 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
             <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="12">No data matching found</td>
+                <td class="mat-cell" colspan="12" class="no-match">No matching data found</td>
             </tr>
         </table>
 

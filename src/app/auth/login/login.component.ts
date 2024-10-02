@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
   }
   ngOnInit(): void {
     if (this.authService.isLoggedIn())
-      this.router.navigate(['personal-best']);
+      this.router.navigate(['exercise-list']);
   }
 
   onSubmit() {
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
       const { email, password } = this.loginForm.value;
       this.authService.login(email, password)
         .then(() => {
-          this.router.navigate(['personal-best']);
+          this.router.navigate(['exercise-list']);
         })
         .catch(error => {
           this._snackBar.open(`Error: ${error.message}`, '❌', { duration: 2000 });

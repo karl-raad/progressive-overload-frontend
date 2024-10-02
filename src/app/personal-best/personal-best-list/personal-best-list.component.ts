@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BeatPersonalBestComponent } from '../beat-personal-best/beat-personal-best.component';
+import { AppConstants } from '../../app-constants';
 
 @Component({
   selector: 'app-personal-best',
@@ -90,22 +91,36 @@ export class PersonalBestComponent implements OnInit {
       });
   }
 
-  beatPB(data: any) {
+  newExercise(): Exercise {
+    return {
+      exerciseId: '',
+      exerciseDate: new Date(),
+      exerciseName: '',
+      exerciseReps: [1],
+      exerciseWeights: [1],
+      exerciseVolume: 1,
+      userEmail: this.sessionStoreService.getUserEmail(),
+      isPersonalBest: 1
+    }
+  }
+
+  beatPB(data: Exercise) {
     const dialogRef = this.dialog.open(BeatPersonalBestComponent, {
       data
     });
 
     dialogRef.afterClosed().subscribe({
-      next: (isNewPB) => {
-        console.log(isNewPB)
-        if (isNewPB === true) {
-          this.getPBs();
-          this.showStar = true;
-          const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
-          snackBarRef.afterDismissed().subscribe(() => this.showStar = false);
+      next: (result) => {
+        if (result !== false) {
+          if (result.state === AppConstants.NEW_PB) {
+            this.getPBs();
+            this.showStar = true;
+            const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
+            snackBarRef.afterDismissed().subscribe(() => this.showStar = false);
+          }
+          else if (result.state === AppConstants.NO_NEW_PB)
+            this._snackBar.open('Nice try. Better luck next time!', '💪', { duration: 2000 });
         }
-        else if (isNewPB === false)
-          this._snackBar.open('Nice try. Better luck next time!', '💪', { duration: 2000 });
       }
     });
   }

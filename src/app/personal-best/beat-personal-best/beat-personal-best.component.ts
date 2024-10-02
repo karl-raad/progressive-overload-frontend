@@ -16,6 +16,7 @@ import { ExerciseService } from '../../exercise/exercise.service';
 import { SessionStorageService } from '../../shared/session-storage.service';
 import { finalize } from 'rxjs';
 import { Exercise } from '../../exercise/exercise-interface';
+import { AppConstants } from '../../app-constants';
 
 @Component({
   selector: 'app-beat-personal-best',
@@ -61,7 +62,6 @@ export class BeatPersonalBestComponent implements OnInit {
 
   ngOnInit(): void {
     this.exerciseForm.patchValue({
-      exerciseDate: this.data.exerciseDate,
       exerciseName: this.data.exerciseName,
       exerciseVolume: this.data.exerciseVolume,
     });
@@ -138,7 +138,7 @@ export class BeatPersonalBestComponent implements OnInit {
         this.exerciseService.updateExercise(this.data.exerciseId, this.data).pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (val: any) => {
-              this.dialogRef.close(exerciseData.exerciseVolume > this.data.exerciseVolume);
+              this.addExercise(exerciseData);
             },
             error: (err: any) => {
               console.error(err);
@@ -146,9 +146,10 @@ export class BeatPersonalBestComponent implements OnInit {
             },
           });
       }
-      else
+      else {
         exerciseData.isPersonalBest = 0; // no new PB
-      this.addExercise(exerciseData);
+        this.addExercise(exerciseData);
+      }
     }
   }
 
@@ -156,8 +157,11 @@ export class BeatPersonalBestComponent implements OnInit {
     this.exerciseService.addExercise(exercise)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
-        next: (val: any) => {
-          this.dialogRef.close(exercise.exerciseVolume > this.data.exerciseVolume);
+        next: (result: any) => {
+          const state = exercise.exerciseVolume > this.data.exerciseVolume ?
+            AppConstants.NEW_PB : AppConstants.NO_NEW_PB;
+          exercise.exerciseId = result.exerciseId;
+          this.dialogRef.close({ state: state, exercise: exercise });
         },
         error: (err: any) => {
           console.error(err);

@@ -22,6 +22,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { SessionStorageService } from '../../shared/session-storage.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AppConstants } from '../../app-constants';
+import { BeatPersonalBestComponent } from '../../personal-best/beat-personal-best/beat-personal-best.component';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-exercise-list',
@@ -45,6 +48,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatOptionModule,
     MatTooltipModule
   ],
+  animations: [
+    trigger('celebrate', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translate(-50%, -6%) scale(0)' }),
+        animate('0.5s ease-out', style({ opacity: 1, transform: 'translate(-50%, -6%) scale(1.5)' })),
+        animate('0.5s ease-in', style({ opacity: 0, transform: 'translate(-50%, -6%) scale(0)' })),
+      ]),
+    ]),
+  ],
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.scss'
 })
@@ -61,6 +73,7 @@ export class ExerciseListComponent implements OnInit {
 
   dataSource!: MatTableDataSource<any>;
   isLoading = false;
+  showStar = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -171,8 +184,29 @@ export class ExerciseListComponent implements OnInit {
           .pipe(finalize(() => this.isLoading = false))
           .subscribe({
             next: (res) => {
+              if (row.isPersonalBest === 1) {
+                const rowIndex = this.dataSource.data.findIndex(item => item.exerciseId === row.exerciseId);
+                this.dataSource.data.splice(rowIndex, 1);
+
+                const newPB: Exercise = this.dataSource.data
+                  .filter((exercise: Exercise) => exercise.exerciseName === row.exerciseName)
+                  .reduce((prev, current) => {
+                    if (!prev) return current;
+                    return (prev.exerciseVolume > current.exerciseVolume) ? prev : current;
+                  }, null);
+                if (newPB) {
+                  newPB.isPersonalBest = 1;
+                  const newPBIndex = this.dataSource.data.findIndex(item => item.exerciseId === newPB.exerciseId);
+                  this.dataSource.data[newPBIndex] = { ...this.dataSource.data[newPBIndex], ...newPB };
+                }
+              }
+              else if (row.isPersonalBest === 0) {
+                const rowIndex = this.dataSource.data.findIndex(item => item.exerciseId === row.exerciseId);
+                this.dataSource.data.splice(rowIndex, 1);
+              }
+
+              this.updateDataSource(this.dataSource.data);
               this._snackBar.open('Exercise deleted successfully!', '️✔️', { duration: 2000 });
-              this.dataSource.data = this.dataSource.data.filter(item => item.exerciseId !== row.exerciseId)
             },
             error: (err) => {
               console.log(err);
@@ -187,6 +221,16 @@ export class ExerciseListComponent implements OnInit {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
       data
     });
+    dialogRef.afterClosed().subscribe({
+      next: (result: Exercise | false) => {
+        if (result !== false) {
+          const updatedResult = this.updateDataSourceDataOldAndNewPB(result);
+          const index = this.dataSource.data.findIndex(item => item.exerciseId === updatedResult.exerciseId);
+          this.dataSource.data[index] = { ...this.dataSource.data[index], ...updatedResult };
+          this.updateDataSource(this.dataSource.data);
+        }
+      }
+    });
   }
 
   openAddExerciseDialog() {
@@ -194,6 +238,58 @@ export class ExerciseListComponent implements OnInit {
     const dialogRef = this.dialog.open(ExerciseAddEditComponent, {
       data
     });
+    dialogRef.afterClosed().subscribe({
+      next: (result: Exercise | false) => {
+        if (result !== false) {
+          const updatedResult = this.updateDataSourceDataOldAndNewPB(result);
+          this.dataSource.data.push(updatedResult);
+          this.updateDataSource(this.dataSource.data);
+        }
+      }
+    });
+  }
+
+  beatPB(data: Exercise) {
+    const dialogRef = this.dialog.open(BeatPersonalBestComponent, {
+      data
+    });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result) => {
+        if (result !== false) {
+          if (result.state === AppConstants.NEW_PB) {
+            this.showStar = true;
+            const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
+            snackBarRef.afterDismissed().subscribe(() => this.showStar = false);
+            data.isPersonalBest = 0;
+            result.exercise.isPersonalBest = 1;
+            const index = this.dataSource.data.findIndex(item => item.exerciseId === data.exerciseId);
+            this.dataSource.data[index] = { ...this.dataSource.data[index], ...data };
+          }
+          else if (result.state === AppConstants.NO_NEW_PB) {
+            this._snackBar.open('Nice try. Better luck next time!', '💪', { duration: 2000 });
+            result.exercise.isPersonalBest = 0;
+          }
+          this.dataSource.data.push(result.exercise);
+          this.updateDataSource(this.dataSource.data);
+        }
+      }
+    });
+  }
+
+  private updateDataSourceDataOldAndNewPB(result: Exercise): Exercise {
+    const personalBest: Exercise = this.dataSource.data.find((exercise: Exercise) => exercise.exerciseName === result.exerciseName && exercise.isPersonalBest);
+    if (!personalBest)
+      result.isPersonalBest = 1;
+    else if (result.exerciseVolume > personalBest.exerciseVolume) {
+      result.isPersonalBest = 1;
+      personalBest.isPersonalBest = 0;
+      const index = this.dataSource.data.findIndex(item => item.exerciseId === personalBest.exerciseId);
+      this.dataSource.data[index] = { ...this.dataSource.data[index], ...personalBest };
+    }
+    else
+      result.isPersonalBest = 0;
+    return result;
   }
 
 }
