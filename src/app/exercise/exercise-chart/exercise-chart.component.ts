@@ -39,6 +39,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
   styleUrl: './exercise-chart.component.scss'
 })
 export class ExerciseChartComponent implements OnInit {
+
   title = 'ng2-charts-demo';
   isLoading = signal(false);
   searchForm: FormGroup;
@@ -107,10 +108,12 @@ export class ExerciseChartComponent implements OnInit {
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (res: Exercise[]) => {
-          this.exerciseHistory = res
+          this.exerciseHistory = res;
 
-          if (res.length === 0)
+          if (res.length === 0) {
+            this.lineChartData.datasets = [];
             this._snackBar.open('No matching data found!', '⚠️', { duration: 2000 });
+          }
           else {
             this.lineChartData = {
               labels: this.exerciseHistory.map(ex => this.datePipe.transform(ex.exerciseDate, 'dd/MM HH:mm') || ''),
@@ -133,3 +136,4 @@ export class ExerciseChartComponent implements OnInit {
       });
   }
 }
+
