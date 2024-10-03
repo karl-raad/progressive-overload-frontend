@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { SessionStorageService } from '../../shared/session-storage.service';
+import { passwordValidator } from '../password-validator';
 
 @Component({
   selector: 'app-confirm-password-reset',
@@ -31,7 +32,7 @@ export class ConfirmPasswordResetComponent {
 
   constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) {
     this.resetForm = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8), passwordValidator()]],
       verificationCode: ['', Validators.required]
     });
   }

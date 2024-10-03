@@ -5,6 +5,10 @@ export function passwordValidator(): ValidatorFn {
         const password = control.value;
         const errors: ValidationErrors = {};
 
+        if (password == null) {
+            return null;
+        }
+
         // Check minimum length
         if (password.length < 8) {
             errors['minlength'] = true;
