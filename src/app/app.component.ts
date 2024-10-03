@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService, private router: Router, private sessionStorageService: SessionStorageService) {
     const changeDetectorRef = inject(ChangeDetectorRef);
     const media = inject(MediaMatcher);
-    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this.mobileQuery = media.matchMedia('(max-width: 800px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
   }
