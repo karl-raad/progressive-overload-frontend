@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SessionStorageService } from '../../shared/session-storage.service';
+import { passwordValidator } from '../password-validator';
 
 @Component({
   selector: 'app-signup',
@@ -27,7 +28,7 @@ export class SignupComponent {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), passwordValidator()]],
     });
   }
 
