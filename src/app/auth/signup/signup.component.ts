@@ -40,7 +40,7 @@ export class SignupComponent {
         this._snackBar.open('Registration successful! Please check your email for confirmation.', '✔', { duration: 3000 });
         this.sessionStoreService.setUserEmail(email);
         this.signupForm.reset();
-        this.router.navigate(['/confirm-registration']);
+        this.router.navigate(['/confirm-registration', email]);
       }).catch(error => {
         console.error('Signup error:', error);
         this._snackBar.open('Error during signup: ' + (error.message || 'Please try again.'), '✖', { duration: 3000 });

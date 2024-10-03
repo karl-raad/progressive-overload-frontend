@@ -17,37 +17,29 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="password" />
-                    <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-                        <ng-container *ngIf="loginForm.get('password')?.errors?.['minlength']">
+                    <mat-error *ngIf="loginForm.get('password')?.touched">
+                        <ng-container *ngIf="loginForm.get('password')?.hasError('minlength')">
                             Password must be at least 8 characters long.
                         </ng-container>
-                        <ng-container *ngIf="!loginForm.get('password')?.errors?.['minlength']">
-                            <ng-container
-                                *ngIf="loginForm.get('password')?.errors?.['passwordStrength']?.['requireUppercase']">
-                                Password must contain at least one uppercase letter.
-                            </ng-container>
-                            <ng-container
-                                *ngIf="loginForm.get('password')?.errors?.['passwordStrength']?.['requireLowercase'] && 
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireUppercase']">
-                                Password must contain at least one lowercase letter.
-                            </ng-container>
-                            <ng-container
-                                *ngIf="loginForm.get('password')?.errors?.['passwordStrength']?.['requireDigits'] &&
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireUppercase'] && 
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireLowercase']">
-                                Password must contain at least one digit.
-                            </ng-container>
-                            <ng-container
-                                *ngIf="loginForm.get('password')?.errors?.['passwordStrength']?.['requireSymbols'] &&
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireUppercase'] && 
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireLowercase'] &&
-                                              !loginForm.get('password')?.errors?.['passwordStrength']?.['requireDigits']">
-                                Password must contain at least one special character.
-                            </ng-container>
+                        <ng-container
+                            *ngIf="loginForm.get('password')?.hasError('requireUppercase') && !loginForm.get('password')?.hasError('minlength')">
+                            Password must contain at least one uppercase letter.
+                        </ng-container>
+                        <ng-container
+                            *ngIf="loginForm.get('password')?.hasError('requireLowercase') && !loginForm.get('password')?.hasError('minlength') && !loginForm.get('password')?.hasError('requireUppercase')">
+                            Password must contain at least one lowercase letter.
+                        </ng-container>
+                        <ng-container
+                            *ngIf="loginForm.get('password')?.hasError('requireDigits') && !loginForm.get('password')?.hasError('minlength') && !loginForm.get('password')?.hasError('requireUppercase') && !loginForm.get('password')?.hasError('requireLowercase')">
+                            Password must contain at least one digit.
+                        </ng-container>
+                        <ng-container
+                            *ngIf="loginForm.get('password')?.hasError('requireSymbols') && !loginForm.get('password')?.hasError('minlength') && !loginForm.get('password')?.hasError('requireUppercase') && !loginForm.get('password')?.hasError('requireLowercase') && !loginForm.get('password')?.hasError('requireDigits')">
+                            Password must contain at least one special character.
                         </ng-container>
                     </mat-error>
-
                 </mat-form-field>
+
                 <div class="forgot-password">
                     <button mat-button routerLink="/forgot-password">Forgot Password</button>
                 </div>
