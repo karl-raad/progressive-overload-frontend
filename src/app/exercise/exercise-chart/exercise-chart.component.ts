@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from "chart.js";
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +40,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
 })
 export class ExerciseChartComponent implements OnInit {
   title = 'ng2-charts-demo';
-  isLoading = false;
+  isLoading = signal(false);
   searchForm: FormGroup;
   exerciseData: ExerciseData[] = [];
   filteredExercises: ExerciseData[] = [];
@@ -100,11 +100,11 @@ export class ExerciseChartComponent implements OnInit {
       this.searchForm.markAllAsTouched();
       return;
     }
-    this.isLoading = true;
+    this.isLoading.set(true);
     let { range, exerciseName } = this.searchForm.value;
     exerciseName = exerciseName ? exerciseName : '';
     this.exerciseService.getExerciseList(this.sessionStoreService.getUserEmail(), exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: (res: Exercise[]) => {
           this.exerciseHistory = res

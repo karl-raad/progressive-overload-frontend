@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,7 +27,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
     SpinnerComponent]
 })
 export class LoginComponent implements OnInit {
-  isLoading: boolean = false;
+  isLoading = signal(false);
   loginForm: FormGroup;
 
   constructor(private sessionStoreService: SessionStorageService, private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const { email, password } = this.loginForm.value;
       this.authService.login(email, password)
         .then(() => {
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
           this._snackBar.open(`Error: ${error.message}`, '❌', { duration: 2000 });
         })
         .finally(() => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         });
 
     }

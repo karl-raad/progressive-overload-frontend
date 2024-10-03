@@ -1,5 +1,5 @@
-<app-spinner [isLoading]="isLoading"></app-spinner>
-<div *ngIf="showStar" @celebrate class="star-icon">⭐️</div>
+<app-spinner [loading]="isLoading()"></app-spinner>
+<div *ngIf="showStar()" @celebrate class="star-icon">⭐️</div>
 <div class="main-body">
     <div class="title-container">
         <h5>Personal Bests</h5>

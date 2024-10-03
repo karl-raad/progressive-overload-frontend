@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -40,7 +40,7 @@ import { AppConstants } from '../../app-constants';
   styleUrl: './beat-personal-best.component.scss'
 })
 export class BeatPersonalBestComponent implements OnInit {
-  isLoading = false;
+  isLoading = signal(false);
   exerciseForm: FormGroup;
 
   constructor(
@@ -126,7 +126,7 @@ export class BeatPersonalBestComponent implements OnInit {
 
   onSubmit() {
     if (this.exerciseForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const exerciseData: Exercise = {
         ...this.exerciseForm.value,
         userEmail: this.sessionStoreService.getUserEmail()
@@ -135,7 +135,7 @@ export class BeatPersonalBestComponent implements OnInit {
       if (exerciseData.exerciseVolume > this.data.exerciseVolume) {
         this.data.isPersonalBest = 0; // old PB
         exerciseData.isPersonalBest = 1; // new PB
-        this.exerciseService.updateExercise(this.data.exerciseId, this.data).pipe(finalize(() => this.isLoading = false))
+        this.exerciseService.updateExercise(this.data.exerciseId, this.data)
           .subscribe({
             next: (val: any) => {
               this.addExercise(exerciseData);
@@ -155,7 +155,6 @@ export class BeatPersonalBestComponent implements OnInit {
 
   addExercise(exercise: Exercise) {
     this.exerciseService.addExercise(exercise)
-      .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (result: any) => {
           const state = exercise.exerciseVolume > this.data.exerciseVolume ?

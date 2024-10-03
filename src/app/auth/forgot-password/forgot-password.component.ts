@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -27,7 +27,7 @@ import { AuthService } from '../auth.service';
   styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent {
-  isLoading: boolean = false;
+  isLoading = signal(false);
   forgotPasswordForm: FormGroup;
 
   constructor(private sessionStoreService: SessionStorageService, private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
@@ -38,7 +38,7 @@ export class ForgotPasswordComponent {
 
   onSubmit() {
     if (this.forgotPasswordForm.get('email')?.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.authService.requestPasswordReset(this.forgotPasswordForm.value.email)
         .then(() => {
           this.sessionStoreService.setUserEmail(this.forgotPasswordForm.value.email);
@@ -48,7 +48,7 @@ export class ForgotPasswordComponent {
         .catch(error => {
           this._snackBar.open('Error sending password reset email', '❌', { duration: 2000 });
         })
-        .finally(() => this.isLoading = false);
+        .finally(() => this.isLoading.set(false));
     }
   }
 }

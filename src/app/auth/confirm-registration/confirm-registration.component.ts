@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +29,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
 })
 export class ConfirmRegistrationComponent {
   confirmationForm: FormGroup;
-  isLoading: boolean = false;
+  isLoading = signal(false);
 
   constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private _snackBar: MatSnackBar, private router: Router) {
     this.confirmationForm = this.fb.group({
@@ -39,7 +39,7 @@ export class ConfirmRegistrationComponent {
 
   confirmUser() {
     if (this.confirmationForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const { verificationCode } = this.confirmationForm.value;
       this.authService.confirmUser(this.sessionStoreService.getUserEmail(), verificationCode)
         .then((result) => {
@@ -50,7 +50,7 @@ export class ConfirmRegistrationComponent {
           console.log(`Error: ${error.message}`);
           this._snackBar.open('User confirmation failed!', '❌', { duration: 2000 });
         })
-        .finally(() => this.isLoading = false);
+        .finally(() => this.isLoading.set(false));
     }
   }
 }

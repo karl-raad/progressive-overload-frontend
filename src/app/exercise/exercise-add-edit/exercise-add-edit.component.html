@@ -1,7 +1,7 @@
 <div mat-dialog-title>
     <h5>{{isDataArray() ? 'Add': 'Edit'}} Exercise</h5>
 </div>
-<app-spinner [isLoading]="isLoading"></app-spinner>
+<app-spinner [loading]="isLoading()"></app-spinner>
 <form [formGroup]="exerciseForm" (ngSubmit)="onSubmit()">
     <div mat-dialog-content>
         <div>

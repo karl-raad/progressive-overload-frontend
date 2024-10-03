@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
@@ -10,5 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrl: './spinner.component.scss'
 })
 export class SpinnerComponent {
-  @Input() isLoading = false;
+  isLoading = signal(false);
+
+  @Input() set loading(value: boolean) {
+    this.isLoading.set(value);
+  }
 }

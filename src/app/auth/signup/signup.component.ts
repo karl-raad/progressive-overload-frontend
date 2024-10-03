@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
 })
 export class SignupComponent {
   signupForm: FormGroup;
-  isLoading: boolean = false;
+  isLoading = signal(false);
 
   constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
     this.signupForm = this.fb.group({
@@ -33,7 +33,7 @@ export class SignupComponent {
 
   onSignup() {
     if (this.signupForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const { name, email, password } = this.signupForm.value;
       this.authService.signup(name, email, password).then(() => {
         this._snackBar.open('Registration successful! Please check your email for confirmation.', '✔', { duration: 3000 });
@@ -44,7 +44,7 @@ export class SignupComponent {
         console.error('Signup error:', error);
         this._snackBar.open('Error during signup: ' + (error.message || 'Please try again.'), '✖', { duration: 3000 });
       })
-        .finally(() => this.isLoading = false);
+        .finally(() => this.isLoading.set(false));
     } else {
       this._snackBar.open('Please fill in the form correctly.', '✖', { duration: 3000 });
     }

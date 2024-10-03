@@ -1,12 +1,12 @@
-<app-spinner [isLoading]="isLoading"></app-spinner>
-<div *ngIf="showStar" @celebrate class="star-icon">⭐️</div>
+<app-spinner [loading]="isLoading()"></app-spinner>
+<div *ngIf="showStar()" @celebrate class="star-icon">⭐️</div>
 <div class="main-body">
     <div class="title-container">
         <h5>Exercise History</h5>
         <button mat-raised-button color="primary" (click)="openAddExerciseDialog()">ADD</button>
     </div>
     <mat-card appearance="outlined">
-        <form [formGroup]="searchForm" (ngSubmit)="search()">
+        <form [formGroup]="searchForm" (ngSubmit)="search(false)">
             <mat-card-content>
                 <div>
                     <mat-form-field appearance="fill">

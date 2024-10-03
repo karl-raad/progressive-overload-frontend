@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ExerciseService } from '../exercise.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -72,8 +72,8 @@ export class ExerciseListComponent implements OnInit {
   ];
 
   dataSource!: MatTableDataSource<any>;
-  isLoading = false;
-  showStar = false;
+  isLoading = signal(false);
+  showStar = signal(false);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -102,9 +102,9 @@ export class ExerciseListComponent implements OnInit {
   ngOnInit(): void {
     this.exerciseData = this.sessionStorageService.getExerciseData();
     if (!this.exerciseData || this.exerciseData.length === 0) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       this.exerciseService.getExerciseDataList()
-        .pipe(finalize(() => this.isLoading = false))
+        .pipe(finalize(() => this.isLoading.set(false)))
         .subscribe({
           next: (res: ExerciseData[]) => {
             this.exerciseData = res;
@@ -144,16 +144,23 @@ export class ExerciseListComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  search() {
+  search(showStar: boolean) {
     if (this.searchForm.invalid) {
       this.searchForm.markAllAsTouched();
       return;
     }
-    this.isLoading = true;
+    this.isLoading.set(true);
     let { range, exerciseName } = this.searchForm.value;
     exerciseName = exerciseName ? exerciseName : '';
     this.exerciseService.getExerciseList(this.sessionStorageService.getUserEmail(), exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(finalize(() => {
+        this.isLoading.set(false);
+        if (showStar) {
+          this.showStar.set(true);
+          const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
+          snackBarRef.afterDismissed().subscribe(() => this.showStar.set(false));
+        }
+      }))
       .subscribe({
         next: (res: Exercise[]) => {
           this.updateDataSource(res);
@@ -179,13 +186,13 @@ export class ExerciseListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.isLoading = true;
+        this.isLoading.set(true);
         this.exerciseService.deleteExercise(row.exerciseId)
-          .pipe(finalize(() => this.isLoading = false))
+          .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
             next: (res) => {
               this._snackBar.open('Exercise deleted successfully!', '️✔️', { duration: 2000 });
-              this.search();
+              this.search(false);
             },
             error: (err) => {
               console.log(err);
@@ -203,7 +210,7 @@ export class ExerciseListComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (result) => {
         if (result)
-          this.search();
+          this.search(false);
       }
     });
   }
@@ -216,7 +223,7 @@ export class ExerciseListComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (result: Exercise | false) => {
         if (result) {
-          this.search();
+          this.search(false);
         }
       }
     });
@@ -230,15 +237,12 @@ export class ExerciseListComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (result) => {
         if (result !== false) {
-          if (result.state === AppConstants.NEW_PB) {
-            this.showStar = true;
-            const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
-            snackBarRef.afterDismissed().subscribe(() => this.showStar = false);
-          }
+          if (result.state === AppConstants.NEW_PB)
+            this.search(true);
           else if (result.state === AppConstants.NO_NEW_PB) {
             this._snackBar.open('Nice try. Better luck next time!', '💪', { duration: 2000 });
+            this.search(false);
           }
-          this.search();
         }
       }
     });

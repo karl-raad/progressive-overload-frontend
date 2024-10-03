@@ -1,5 +1,5 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule, FormArray, FormControl } from '@angular/forms';
+import { Component, Inject, OnInit, signal } from '@angular/core';
+import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -41,7 +41,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
 })
 export class ExerciseAddEditComponent implements OnInit {
 
-  isLoading = false;
+  isLoading = signal(false);
   exerciseForm: FormGroup;
   filteredExercises: ExerciseData[] = [];
 
@@ -152,14 +152,14 @@ export class ExerciseAddEditComponent implements OnInit {
 
   onSubmit() {
     if (this.exerciseForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const exerciseData: Exercise = {
         ...this.exerciseForm.value,
         userEmail: this.sessionStoreService.getUserEmail()
       };
       if (!this.isDataArray()) {
         this.exerciseService.updateExercise(this.data.exerciseId, exerciseData)
-          .pipe(finalize(() => this.isLoading = false))
+          .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
             next: (val: any) => {
               this._snackBar.open('Exercise details updated successfully!', '️✔️', { duration: 2000 });
@@ -173,7 +173,7 @@ export class ExerciseAddEditComponent implements OnInit {
           });
       } else {
         this.exerciseService.addExercise(exerciseData)
-          .pipe(finalize(() => this.isLoading = false))
+          .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
             next: (val: any) => {
               exerciseData.exerciseId = val.exerciseId;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { PersonalBestService } from '../personal-best.service';
 import { Exercise } from '../../exercise/exercise-interface';
 import { SessionStorageService } from '../../shared/session-storage.service';
@@ -47,7 +47,7 @@ import { AppConstants } from '../../app-constants';
 })
 export class PersonalBestComponent implements OnInit {
   personalBests: Exercise[] = [];
-  isLoading = false;
+  isLoading = signal(false);
   displayedColumns: string[] = [
     'exerciseDate',
     'exerciseName',
@@ -57,7 +57,7 @@ export class PersonalBestComponent implements OnInit {
     'action',
   ];
   dataSource!: MatTableDataSource<any>;
-  showStar = false;
+  showStar = signal(false);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -65,7 +65,7 @@ export class PersonalBestComponent implements OnInit {
   constructor(private dialog: MatDialog, private _snackBar: MatSnackBar, private sessionStoreService: SessionStorageService, private personalBestService: PersonalBestService) { }
 
   ngOnInit(): void {
-    this.getPBs();
+    this.getPBs(false);
   }
 
   applyFilter(event: Event) {
@@ -73,10 +73,17 @@ export class PersonalBestComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  getPBs() {
-    this.isLoading = true;
+  getPBs(showStar: boolean) {
+    this.isLoading.set(true);
     this.personalBestService.getPersonalBests(this.sessionStoreService.getUserEmail())
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(finalize(() => {
+        this.isLoading.set(false)
+        if (showStar) {
+          this.showStar.set(true);
+          const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
+          snackBarRef.afterDismissed().subscribe(() => this.showStar.set(false));
+        }
+      }))
       .subscribe({
         next: (res: Exercise[]) => {
           this.personalBests = res;
@@ -112,12 +119,8 @@ export class PersonalBestComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (result) => {
         if (result !== false) {
-          if (result.state === AppConstants.NEW_PB) {
-            this.getPBs();
-            this.showStar = true;
-            const snackBarRef = this._snackBar.open('New Personal Best!', '🏆', { duration: 2000 });
-            snackBarRef.afterDismissed().subscribe(() => this.showStar = false);
-          }
+          if (result.state === AppConstants.NEW_PB)
+            this.getPBs(true);
           else if (result.state === AppConstants.NO_NEW_PB)
             this._snackBar.open('Nice try. Better luck next time!', '💪', { duration: 2000 });
         }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ import { SessionStorageService } from '../../shared/session-storage.service';
 })
 export class ConfirmPasswordResetComponent {
   resetForm: FormGroup;
-  isLoading = false;
+  isLoading = signal(false);
 
   constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) {
     this.resetForm = this.fb.group({
@@ -38,7 +38,7 @@ export class ConfirmPasswordResetComponent {
 
   onSubmit() {
     if (this.resetForm.valid) {
-      this.isLoading = true;
+      this.isLoading.set(true);
       const { newPassword, verificationCode } = this.resetForm.value;
       this.authService.confirmPassword(this.sessionStoreService.getUserEmail(), verificationCode, newPassword)
         .then(() => {
@@ -50,7 +50,7 @@ export class ConfirmPasswordResetComponent {
           this._snackBar.open(`Error: ${error.message}`, '❌', { duration: 2000 });
         })
         .finally(() => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         });
     }
   }
