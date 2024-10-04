@@ -64,8 +64,7 @@ export class ConfirmRegistrationComponent implements OnInit {
           this.router.navigate(['/exercise-list']);
         })
         .catch((error) => {
-          console.log(`Error: ${error.message}`);
-          this._snackBar.open('User confirmation failed!', '❌', { duration: 2000 });
+          this._snackBar.open(`User confirmation failed! ${error.message}`, '❌', { duration: 2000 });
         })
         .finally(() => this.isLoading.set(false));
     }
