@@ -28,25 +28,7 @@
                     <mat-label>Password</mat-label>
                     <input matInput type="password" formControlName="password" />
                     <mat-error *ngIf="signupForm.get('password')?.touched">
-                        <ng-container *ngIf="signupForm.get('password')?.hasError('minlength')">
-                            Password must be at least 8 characters long.
-                        </ng-container>
-                        <ng-container
-                            *ngIf="signupForm.get('password')?.hasError('requireUppercase') && !signupForm.get('password')?.hasError('minlength')">
-                            Password must contain at least one uppercase letter.
-                        </ng-container>
-                        <ng-container
-                            *ngIf="signupForm.get('password')?.hasError('requireLowercase') && !signupForm.get('password')?.hasError('minlength') && !signupForm.get('password')?.hasError('requireUppercase')">
-                            Password must contain at least one lowercase letter.
-                        </ng-container>
-                        <ng-container
-                            *ngIf="signupForm.get('password')?.hasError('requireDigits') && !signupForm.get('password')?.hasError('minlength') && !signupForm.get('password')?.hasError('requireUppercase') && !signupForm.get('password')?.hasError('requireLowercase')">
-                            Password must contain at least one digit.
-                        </ng-container>
-                        <ng-container
-                            *ngIf="signupForm.get('password')?.hasError('requireSymbols') && !signupForm.get('password')?.hasError('minlength') && !signupForm.get('password')?.hasError('requireUppercase') && !signupForm.get('password')?.hasError('requireLowercase') && !signupForm.get('password')?.hasError('requireDigits')">
-                            Password must contain at least one special character.
-                        </ng-container>
+                        <span>{{ getErrors() }}</span>
                     </mat-error>
                 </mat-form-field>
 

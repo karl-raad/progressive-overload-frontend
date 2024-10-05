@@ -28,7 +28,7 @@ export class SignupComponent {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), passwordValidator()]],
+      password: ['', [passwordValidator()]],
     });
   }
 
@@ -49,5 +49,11 @@ export class SignupComponent {
     } else {
       this._snackBar.open('Please fill in the form correctly.', '✖', { duration: 3000 });
     }
+  }
+
+  getErrors(): string {
+    const passwordControl = this.signupForm.get('password');
+    const validationErrors = passwordControl?.errors;
+    return validationErrors && validationErrors['messages'] ? validationErrors['messages'] : '';
   }
 }
