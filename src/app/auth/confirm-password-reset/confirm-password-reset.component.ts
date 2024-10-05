@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { SessionStorageService } from '../../shared/session-storage.service';
 import { passwordValidator } from '../password-validator';
+import { PasswordInputComponent } from '../password-input/password-input.component';
 
 @Component({
   selector: 'app-confirm-password-reset',
@@ -22,7 +23,8 @@ import { passwordValidator } from '../password-validator';
     CommonModule,
     ReactiveFormsModule,
     SpinnerComponent,
-    MatSnackBarModule],
+    MatSnackBarModule,
+    PasswordInputComponent],
   templateUrl: './confirm-password-reset.component.html',
   styleUrl: './confirm-password-reset.component.scss'
 })
@@ -32,7 +34,7 @@ export class ConfirmPasswordResetComponent {
 
   constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private authService: AuthService, private router: Router, private _snackBar: MatSnackBar) {
     this.resetForm = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(8), passwordValidator()]],
+      newPassword: ['', [Validators.required, passwordValidator()]],
       verificationCode: ['', Validators.required]
     });
   }

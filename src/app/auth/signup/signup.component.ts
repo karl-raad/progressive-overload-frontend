@@ -12,19 +12,22 @@ import { AuthService } from '../auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SessionStorageService } from '../../shared/session-storage.service';
 import { passwordValidator } from '../password-validator';
+import { PasswordInputComponent } from '../password-input/password-input.component';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
   standalone: true,
-  imports: [MatSnackBarModule, MatInputModule, MatButtonModule, MatCardModule, MatFormFieldModule, CommonModule, ReactiveFormsModule, SpinnerComponent]
+  imports: [PasswordInputComponent, MatSnackBarModule, MatInputModule, MatButtonModule, MatCardModule, MatFormFieldModule, CommonModule, ReactiveFormsModule, SpinnerComponent]
 })
 export class SignupComponent {
   signupForm: FormGroup;
   isLoading = signal(false);
 
-  constructor(private sessionStoreService: SessionStorageService, private fb: FormBuilder, private router: Router, private authService: AuthService, private _snackBar: MatSnackBar) {
+  constructor(private sessionStoreService: SessionStorageService,
+    private fb: FormBuilder, private router: Router,
+    private authService: AuthService, private _snackBar: MatSnackBar) {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -51,9 +54,4 @@ export class SignupComponent {
     }
   }
 
-  getErrors(): string {
-    const passwordControl = this.signupForm.get('password');
-    const validationErrors = passwordControl?.errors;
-    return validationErrors && validationErrors['messages'] ? validationErrors['messages'] : '';
-  }
 }

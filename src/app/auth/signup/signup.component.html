@@ -24,13 +24,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill">
-                    <mat-label>Password</mat-label>
-                    <input matInput type="password" formControlName="password" />
-                    <mat-error *ngIf="signupForm.get('password')?.touched">
-                        <span>{{ getErrors() }}</span>
-                    </mat-error>
-                </mat-form-field>
+                <app-password-input [form]="signupForm" controlName="password"></app-password-input>
 
                 <div class="register-button-container">
                     <button mat-raised-button color="primary" type="submit"

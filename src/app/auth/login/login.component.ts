@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   constructor(private _snackBar: MatSnackBar, private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), passwordValidator()]]
+      password: ['', [Validators.required]]
     });
   }
 
