@@ -152,7 +152,11 @@ export class ExerciseListComponent implements OnInit {
     this.isLoading.set(true);
     let { range, exerciseName } = this.searchForm.value;
     exerciseName = exerciseName ? exerciseName : '';
-    this.exerciseService.getExerciseList(this.sessionStorageService.getUserEmail(), exerciseName, new Date(range.startDate).toISOString(), new Date(range.endDate).toISOString())
+    const startDate = new Date(range.startDate);
+    startDate.setHours(0, 0);
+    const endDate = new Date(range.endDate);
+    endDate.setHours(23, 59, 59, 999);
+    this.exerciseService.getExerciseList(this.sessionStorageService.getUserEmail(), exerciseName, startDate.toISOString(), endDate.toISOString())
       .pipe(finalize(() => {
         this.isLoading.set(false);
         if (showStar) {
