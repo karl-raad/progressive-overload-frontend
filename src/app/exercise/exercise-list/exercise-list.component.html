@@ -68,6 +68,9 @@
                     <span *ngIf="row.isPersonalBest" (click)="beatPB(row)" class="action-icon star-action-icon">
                         <mat-icon matTooltip="Beat">star</mat-icon>
                     </span>
+                    <span *ngIf="!row.isPersonalBest" (click)="beatPB(row)" class="action-icon star-half-action-icon">
+                        <mat-icon matTooltip="Beat">star_half</mat-icon>
+                    </span>
                     <span (click)="openEditForm(row)" class="action-icon" matTooltip="Edit">
                         <mat-icon color="primary">edit</mat-icon>
                     </span>
