@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
-import { AppConstants } from '../app-constants';
+import {Injectable} from '@angular/core';
+import {AppConstants} from '../app-constants';
+import {ExerciseData} from "../exercise/exercise-interface";
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionStorageService {
 
-  setExerciseData(data: any): void {
+  setExerciseData(data: ExerciseData[]): void {
     sessionStorage.setItem(AppConstants.EXERCISE_DATA, JSON.stringify(data));
   }
 
-  getExerciseData(): any {
+  getExerciseData(): ExerciseData[] {
     const data = sessionStorage.getItem(AppConstants.EXERCISE_DATA);
     return data ? JSON.parse(data) : null;
   }

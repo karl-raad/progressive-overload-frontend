@@ -36,7 +36,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    ExerciseAddEditComponent,
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
@@ -194,7 +193,7 @@ export class ExerciseListComponent implements OnInit {
         this.exerciseService.deleteExercise(row.exerciseId)
           .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
-            next: (res) => {
+            next: () => {
               this._snackBar.open('Exercise deleted successfully!', '️✔️', { duration: 2000 });
               this.search(false);
             },
@@ -226,6 +225,9 @@ export class ExerciseListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe({
       next: (result: Exercise | false) => {
+        this.exerciseData = this.sessionStorageService.getExerciseData();
+        this.filteredExercises = this.sessionStorageService.getExerciseData();
+        this.exerciseNameSearchCriteriaChange();
         if (result) {
           this.search(false);
         }

@@ -1,21 +1,21 @@
-import { Component, Inject, OnInit, signal } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { ExerciseService } from '../exercise.service';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SpinnerComponent } from '../../shared/spinner/spinner.component';
-import { finalize, map, startWith } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
-import { Exercise, ExerciseData } from '../exercise-interface';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { SessionStorageService } from '../../shared/session-storage.service';
+import {Component, Inject, OnInit, signal} from '@angular/core';
+import {FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormArray, FormControl} from '@angular/forms';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {ExerciseService} from '../exercise.service';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatNativeDateModule} from '@angular/material/core';
+import {CommonModule} from '@angular/common';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {SpinnerComponent} from '../../shared/spinner/spinner.component';
+import {finalize, map, startWith} from 'rxjs';
+import {MatCardModule} from '@angular/material/card';
+import {Exercise, ExerciseData} from '../exercise-interface';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {SessionStorageService} from '../../shared/session-storage.service';
 
 @Component({
   selector: 'app-exercise-add-edit',
@@ -61,6 +61,7 @@ export class ExerciseAddEditComponent implements OnInit {
       exerciseVolume: [1, Validators.required],
     });
   }
+
   ngOnInit(): void {
     if (!this.isDataArray()) {
       this.exerciseForm.patchValue({
@@ -72,8 +73,7 @@ export class ExerciseAddEditComponent implements OnInit {
         this.exerciseReps.push(new FormControl(rep, Validators.required));
         this.exerciseWeights.push(new FormControl(this.data.exerciseWeights[index] || 1, Validators.required));
       });
-    }
-    else {
+    } else {
       this.addSet();
       this.exerciseForm.get('exerciseName')!.valueChanges
         .pipe(
@@ -97,7 +97,7 @@ export class ExerciseAddEditComponent implements OnInit {
 
   updateVolume(): void {
     const totalVolume = this.totalVolume;
-    this.exerciseForm.get('exerciseVolume')?.setValue(totalVolume, { emitEvent: false });
+    this.exerciseForm.get('exerciseVolume')?.setValue(totalVolume, {emitEvent: false});
   }
 
   addSet(): void {
@@ -161,14 +161,14 @@ export class ExerciseAddEditComponent implements OnInit {
         this.exerciseService.updateExercise(this.data.exerciseId, exerciseData)
           .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
-            next: (val: any) => {
-              this._snackBar.open('Exercise details updated successfully!', '️✔️', { duration: 2000 });
+            next: () => {
+              this._snackBar.open('Exercise details updated successfully!', '️✔️', {duration: 2000});
               exerciseData.exerciseId = this.data.exerciseId;
               this.dialogRef.close(exerciseData);
             },
             error: (err: any) => {
               console.error(err);
-              this._snackBar.open('Error while updating the exercise!', '❌', { duration: 2000 });
+              this._snackBar.open('Error while updating the exercise!', '❌', {duration: 2000});
             },
           });
       } else {
@@ -176,13 +176,37 @@ export class ExerciseAddEditComponent implements OnInit {
           .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
             next: (val: any) => {
-              exerciseData.exerciseId = val.exerciseId;
-              this._snackBar.open('Exercise added successfully!', '️✔️', { duration: 2000 });
-              this.dialogRef.close(exerciseData);
+              const allExercises = this.sessionStoreService.getExerciseData();
+              const exercise = allExercises.find(exercise => exercise.exerciseDataName === exerciseData.exerciseName);
+              if (!exercise) {
+                const exerciseDataToSave: ExerciseData = {
+                  userEmail: exerciseData.userEmail,
+                  exerciseDataName: exerciseData.exerciseName
+                }
+                allExercises.push(exerciseDataToSave);
+                this.exerciseService.addExerciseData(exerciseDataToSave).subscribe({
+                    next: () => {
+                      this.sessionStoreService.setExerciseData(allExercises);
+                      exerciseData.exerciseId = val.exerciseId;
+                      this._snackBar.open('Exercise added successfully!', '️✔️', {duration: 2000});
+                      this.dialogRef.close(exerciseData);
+                    },
+                    error: (err: any) => {
+                      console.error(err);
+                      this._snackBar.open('Error while adding the exercise data!', '❌', {duration: 2000});
+                    }
+                  }
+                );
+              }
+              else {
+                exerciseData.exerciseId = val.exerciseId;
+                this._snackBar.open('Exercise added successfully!', '️✔️', {duration: 2000});
+                this.dialogRef.close(exerciseData);
+              }
             },
             error: (err: any) => {
               console.error(err);
-              this._snackBar.open('Error while adding the exercise!', '❌', { duration: 2000 });
+              this._snackBar.open('Error while adding the exercise!', '❌', {duration: 2000});
             },
           });
       }

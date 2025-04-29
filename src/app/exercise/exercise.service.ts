@@ -30,6 +30,10 @@ export class ExerciseService {
     return this.httpClient.get<Exercise[]>(`${this.baseUrl}/exercises`, { params });
   }
 
+  addExerciseData(data: ExerciseData): Observable<ExerciseData> {
+    return this.httpClient.post<ExerciseData>(`${this.baseUrl}/exercises-data`, data);
+  }
+
   getExerciseDataList(): Observable<ExerciseData[]> {
     return this.httpClient.get<ExerciseData[]>(`${this.baseUrl}/exercises-data`);
   }
@@ -37,6 +41,5 @@ export class ExerciseService {
   deleteExercise(id: string): Observable<Exercise> {
     return this.httpClient.delete<Exercise>(`${this.baseUrl}/exercises/${id}`);
   }
-
 
 }
