@@ -1,40 +1,43 @@
 <app-spinner [loading]="isLoading()"></app-spinner>
 <div *ngIf="showStar()" @celebrate class="star-icon">⭐️</div>
 <div class="main-body">
-    <div class="title-container">
-        <h5>Exercise History</h5>
-        <button mat-raised-button color="primary" (click)="openAddExerciseDialog()">ADD</button>
-    </div>
-    <mat-card appearance="outlined">
-        <form [formGroup]="searchForm" (ngSubmit)="search(false)">
-            <mat-card-content>
-                <div>
-                    <mat-form-field appearance="fill">
-                        <mat-label>Date Range</mat-label>
-                        <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-                            <input matStartDate formControlName="startDate" placeholder="Start date" required>
-                            <input matEndDate formControlName="endDate" placeholder="End date" required>
-                        </mat-date-range-input>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field>
-                    <mat-form-field appearance="fill">
-                        <mat-label>Name</mat-label>
-                        <input type="text" matInput formControlName="exerciseName" [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let exercise of filteredExercises" [value]="exercise.exerciseDataName">
-                                {{ exercise.exerciseDataName }}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="search-button-container">
-                    <button mat-raised-button color="primary" type="submit">SEARCH</button>
-                </div>
-            </mat-card-content>
-        </form>
+    <div class="search-container">
+        <div class="title-container">
+            <h5>Exercise History</h5>
+            <button mat-raised-button color="primary" (click)="openAddExerciseDialog()">ADD</button>
+        </div>
+        <mat-card appearance="outlined">
+            <form [formGroup]="searchForm" (ngSubmit)="search(false)">
+                <mat-card-content>
+                    <div>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Date Range</mat-label>
+                            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                                <input matStartDate formControlName="startDate" placeholder="Start date" required>
+                                <input matEndDate formControlName="endDate" placeholder="End date" required>
+                            </mat-date-range-input>
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-date-range-picker #picker></mat-date-range-picker>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Name</mat-label>
+                            <input type="text" matInput formControlName="exerciseName" [matAutocomplete]="auto">
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let exercise of filteredExercises"
+                                    [value]="exercise.exerciseDataName">
+                                    {{ exercise.exerciseDataName }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="search-button-container">
+                        <button mat-raised-button color="primary" type="submit">SEARCH</button>
+                    </div>
+                </mat-card-content>
+            </form>
 
-    </mat-card>
+        </mat-card>
+    </div>
     <br>
     <div [hidden]="!dataSource" class="table-container">
         <mat-form-field>
