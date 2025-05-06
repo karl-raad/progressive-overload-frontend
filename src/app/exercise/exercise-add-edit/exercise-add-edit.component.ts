@@ -173,7 +173,6 @@ export class ExerciseAddEditComponent implements OnInit {
           });
       } else {
         this.exerciseService.addExercise(exerciseData)
-          .pipe(finalize(() => this.isLoading.set(false)))
           .subscribe({
             next: (val: any) => {
               const allExercises = this.sessionStoreService.getExerciseData();
@@ -184,7 +183,9 @@ export class ExerciseAddEditComponent implements OnInit {
                   exerciseDataName: exerciseData.exerciseName
                 }
                 allExercises.push(exerciseDataToSave);
-                this.exerciseService.addExerciseData(exerciseDataToSave).subscribe({
+                this.exerciseService.addExerciseData(exerciseDataToSave)
+                  .pipe(finalize(() => this.isLoading.set(false)))
+                  .subscribe({
                     next: () => {
                       this.sessionStoreService.setExerciseData(allExercises);
                       exerciseData.exerciseId = val.exerciseId;
